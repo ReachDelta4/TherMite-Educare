@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from "react";
-import { Canvas as FabricCanvas, Circle, Rect, FabricText, Line } from "fabric";
+import { Canvas as FabricCanvas, Circle, Rect, FabricText, Line, Group } from "fabric";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -143,7 +143,7 @@ export function WhatsAppFlowDesigner() {
     });
 
     // Group the elements
-    const group = new fabric.Group([nodeRect, titleText, contentText], {
+    const group = new Group([nodeRect, titleText, contentText], {
       left: 100,
       top: 100,
       selectable: true,
