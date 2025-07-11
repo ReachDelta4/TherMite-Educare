@@ -5,18 +5,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Award, Upload, Download, FileText, Image, Eye } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Award, Upload, Download, FileText, Image, Eye, Settings, Play, BarChart3, Users, CheckCircle, AlertCircle } from "lucide-react";
 import { useState } from "react";
 
 export function CertificateGenerator() {
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [studentData, setStudentData] = useState("");
-  const [showPreview, setShowPreview] = useState(false);
 
   const templates = [
-    { id: "completion", name: "Course Completion", status: "active", preview: "/api/placeholder/400/300" },
-    { id: "achievement", name: "Achievement Award", status: "active", preview: "/api/placeholder/400/300" },
-    { id: "participation", name: "Participation", status: "draft", preview: "/api/placeholder/400/300" }
+    { id: "completion", name: "Course Completion", status: "active", preview: "/api/placeholder/400/300", students: 1250 },
+    { id: "achievement", name: "Achievement Award", status: "active", preview: "/api/placeholder/400/300", students: 850 },
+    { id: "participation", name: "Participation", status: "draft", preview: "/api/placeholder/400/300", students: 0 }
   ];
 
   const sampleCertificateData = {
@@ -28,159 +28,278 @@ export function CertificateGenerator() {
     certificateId: "CERT-2024-001"
   };
 
+  const placeholders = [
+    { key: "studentName", label: "Student's full name", example: "John Doe" },
+    { key: "courseName", label: "Course title", example: "Full Stack Development" },
+    { key: "completionDate", label: "Completion date", example: "March 15, 2024" },
+    { key: "instructorName", label: "Instructor name", example: "Dr. Sarah Johnson" },
+    { key: "grade", label: "Final grade", example: "A+" },
+    { key: "certificateId", label: "Unique certificate ID", example: "CERT-2024-001" }
+  ];
+
   return (
-    <Card className="shadow-card">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Award className="h-6 w-6 text-primary" />
-            <div>
-              <CardTitle>Certificate Generator Automation</CardTitle>
-              <CardDescription>Automatically generate and distribute certificates</CardDescription>
-            </div>
-          </div>
-          <Badge variant="default">3 Templates</Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="template">Certificate Template</Label>
-              <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
-                <SelectTrigger className="mt-2">
-                  <SelectValue placeholder="Select a template" />
-                </SelectTrigger>
-                <SelectContent>
-                  {templates.map((template) => (
-                    <SelectItem key={template.id} value={template.id}>
-                      <div className="flex items-center justify-between w-full">
-                        <span>{template.name}</span>
-                        <Badge variant={template.status === "active" ? "default" : "secondary"} className="ml-2">
-                          {template.status}
-                        </Badge>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <Label htmlFor="data">Student Data Source</Label>
-              <div className="flex gap-2 mt-2">
-                <Input
-                  id="data"
-                  placeholder="Upload CSV or connect to database"
-                  value={studentData}
-                  onChange={(e) => setStudentData(e.target.value)}
-                  className="flex-1"
-                />
-                <Button variant="outline" size="icon">
-                  <Upload className="h-4 w-4" />
-                </Button>
+    <div className="space-y-8">
+      {/* Header Section */}
+      <Card className="border-0 bg-gradient-subtle shadow-elegant">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-primary/10 rounded-lg">
+                <Award className="h-8 w-8 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-2xl font-bold">Certificate Generator</CardTitle>
+                <CardDescription className="text-base">
+                  Enterprise-grade certificate automation system
+                </CardDescription>
               </div>
             </div>
+            <div className="flex items-center space-x-2">
+              <Badge variant="default" className="px-3 py-1">
+                <CheckCircle className="h-3 w-3 mr-1" />
+                Active
+              </Badge>
+              <Badge variant="secondary" className="px-3 py-1">
+                {templates.length} Templates
+              </Badge>
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
 
-            {/* Certificate Preview */}
-            {selectedTemplate && (
-              <div className="space-y-2">
-                <Label>Certificate Preview</Label>
-                <div className="border rounded-lg p-4 bg-muted/20">
-                  <div className="aspect-[4/3] bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-dashed border-blue-200 rounded-lg flex items-center justify-center">
-                    <div className="text-center space-y-2">
-                      <Award className="h-12 w-12 text-blue-500 mx-auto" />
-                      <div className="space-y-1 text-sm">
-                        <p className="font-bold text-lg">Certificate of Completion</p>
-                        <p>This is to certify that</p>
-                        <p className="font-semibold text-blue-600">{sampleCertificateData.studentName}</p>
-                        <p>has successfully completed</p>
-                        <p className="font-semibold">{sampleCertificateData.courseName}</p>
-                        <p className="text-xs mt-2">Date: {sampleCertificateData.completionDate}</p>
-                        <p className="text-xs">Grade: {sampleCertificateData.grade}</p>
+      {/* Statistics Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="shadow-card">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Total Generated</p>
+                <p className="text-3xl font-bold text-primary">2,847</p>
+                <p className="text-sm text-success">+12% this month</p>
+              </div>
+              <BarChart3 className="h-8 w-8 text-primary/60" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="shadow-card">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Successfully Delivered</p>
+                <p className="text-3xl font-bold text-success">2,641</p>
+                <p className="text-sm text-muted-foreground">92.8% success rate</p>
+              </div>
+              <CheckCircle className="h-8 w-8 text-success/60" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="shadow-card">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Active Students</p>
+                <p className="text-3xl font-bold text-foreground">1,250</p>
+                <p className="text-sm text-muted-foreground">Across 3 courses</p>
+              </div>
+              <Users className="h-8 w-8 text-primary/60" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="shadow-card">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Processing Queue</p>
+                <p className="text-3xl font-bold text-warning">24</p>
+                <p className="text-sm text-muted-foreground">Pending generation</p>
+              </div>
+              <AlertCircle className="h-8 w-8 text-warning/60" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Configuration Panel */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Configuration Section */}
+        <div className="lg:col-span-2 space-y-6">
+          <Card className="shadow-card">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Settings className="h-5 w-5" />
+                <span>Configuration</span>
+              </CardTitle>
+              <CardDescription>
+                Set up your certificate generation parameters
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="template" className="text-sm font-semibold">Certificate Template</Label>
+                  <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+                    <SelectTrigger className="mt-2 h-12">
+                      <SelectValue placeholder="Select a certificate template" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {templates.map((template) => (
+                        <SelectItem key={template.id} value={template.id}>
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center space-x-3">
+                              <div className={`h-2 w-2 rounded-full ${template.status === "active" ? "bg-success" : "bg-muted"}`} />
+                              <span className="font-medium">{template.name}</span>
+                            </div>
+                            <div className="text-xs text-muted-foreground ml-4">
+                              {template.students} students
+                            </div>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="data" className="text-sm font-semibold">Student Data Source</Label>
+                  <div className="flex gap-3 mt-2">
+                    <Input
+                      id="data"
+                      placeholder="Upload CSV file or connect to database"
+                      value={studentData}
+                      onChange={(e) => setStudentData(e.target.value)}
+                      className="flex-1 h-12"
+                    />
+                    <Button variant="outline" size="lg" className="px-6">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Browse
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Supported formats: CSV, Excel, JSON. Maximum 10,000 records per batch.
+                  </p>
+                </div>
+              </div>
+              
+              <Separator />
+              
+              <div className="flex justify-between items-center pt-4">
+                <div className="flex space-x-3">
+                  <Button variant="outline" size="lg">
+                    <Eye className="h-4 w-4 mr-2" />
+                    Preview Template
+                  </Button>
+                  <Button variant="outline" size="lg">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Template Settings
+                  </Button>
+                </div>
+                <Button size="lg" disabled={!selectedTemplate} className="px-8">
+                  <Play className="h-4 w-4 mr-2" />
+                  Generate Certificates
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Certificate Preview */}
+          {selectedTemplate && (
+            <Card className="shadow-card">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Image className="h-5 w-5" />
+                  <span>Certificate Preview</span>
+                </CardTitle>
+                <CardDescription>
+                  Live preview with sample data
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="border-2 border-dashed border-border rounded-xl p-8 bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-blue-950/20 dark:to-purple-950/20">
+                  <div className="text-center space-y-4">
+                    <div className="flex justify-center">
+                      <div className="p-4 bg-primary/10 rounded-full">
+                        <Award className="h-16 w-16 text-primary" />
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <h2 className="text-2xl font-bold text-foreground">Certificate of Completion</h2>
+                      <p className="text-muted-foreground">This is to certify that</p>
+                      <p className="text-xl font-bold text-primary">{sampleCertificateData.studentName}</p>
+                      <p className="text-muted-foreground">has successfully completed</p>
+                      <p className="text-lg font-semibold text-foreground">{sampleCertificateData.courseName}</p>
+                      <div className="flex justify-between items-center pt-6 text-sm text-muted-foreground">
+                        <div>
+                          <p>Date: {sampleCertificateData.completionDate}</p>
+                          <p>Grade: {sampleCertificateData.grade}</p>
+                        </div>
+                        <div className="text-right">
+                          <p>Instructor: {sampleCertificateData.instructorName}</p>
+                          <p>ID: {sampleCertificateData.certificateId}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div className="mt-2 text-xs text-muted-foreground">
-                    <p>Preview uses sample data. Actual certificates will use real student information.</p>
-                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-          
-          <div className="space-y-4">
-            <div className="p-4 border rounded-lg bg-muted/50">
-              <h4 className="font-medium mb-2">Generation Statistics</h4>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <div className="text-2xl font-bold text-primary">234</div>
-                  <div className="text-muted-foreground">Certificates Generated</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-success">198</div>
-                  <div className="text-muted-foreground">Successfully Delivered</div>
-                </div>
-              </div>
-            </div>
+                <p className="text-xs text-muted-foreground mt-3 text-center">
+                  Preview uses sample data. Generated certificates will use actual student information.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
 
-            {/* Available Placeholders */}
-            <div className="p-4 border rounded-lg bg-muted/50">
-              <h4 className="font-medium mb-2">Available Placeholders</h4>
-              <div className="grid grid-cols-1 gap-2 text-xs">
-                <div className="flex justify-between">
-                  <span className="font-mono bg-muted px-2 py-1 rounded">{"{{studentName}}"}</span>
-                  <span className="text-muted-foreground">Student's full name</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-mono bg-muted px-2 py-1 rounded">{"{{courseName}}"}</span>
-                  <span className="text-muted-foreground">Course title</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-mono bg-muted px-2 py-1 rounded">{"{{completionDate}}"}</span>
-                  <span className="text-muted-foreground">Completion date</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-mono bg-muted px-2 py-1 rounded">{"{{instructorName}}"}</span>
-                  <span className="text-muted-foreground">Instructor name</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-mono bg-muted px-2 py-1 rounded">{"{{grade}}"}</span>
-                  <span className="text-muted-foreground">Final grade</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-mono bg-muted px-2 py-1 rounded">{"{{certificateId}}"}</span>
-                  <span className="text-muted-foreground">Unique certificate ID</span>
-                </div>
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Template Variables */}
+          <Card className="shadow-card">
+            <CardHeader>
+              <CardTitle className="text-lg">Template Variables</CardTitle>
+              <CardDescription>
+                Available placeholders for dynamic content
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {placeholders.map((placeholder) => (
+                  <div key={placeholder.key} className="p-3 border rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors">
+                    <div className="flex items-center justify-between mb-2">
+                      <code className="text-sm font-mono bg-muted text-muted-foreground px-2 py-1 rounded">
+                        {`{{${placeholder.key}}}`}
+                      </code>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{placeholder.label}</p>
+                    <p className="text-xs text-foreground mt-1">Example: {placeholder.example}</p>
+                  </div>
+                ))}
               </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Template Management</Label>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  <Image className="h-4 w-4 mr-1" />
-                  Edit Template
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Eye className="h-4 w-4 mr-1" />
-                  Full Preview
-                </Button>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Actions */}
+          <Card className="shadow-card">
+            <CardHeader>
+              <CardTitle className="text-lg">Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button variant="outline" className="w-full justify-start h-12" size="lg">
+                <Download className="h-4 w-4 mr-3" />
+                Export Templates
+              </Button>
+              <Button variant="outline" className="w-full justify-start h-12" size="lg">
+                <FileText className="h-4 w-4 mr-3" />
+                View Generation History
+              </Button>
+              <Button variant="outline" className="w-full justify-start h-12" size="lg">
+                <Settings className="h-4 w-4 mr-3" />
+                System Configuration
+              </Button>
+            </CardContent>
+          </Card>
         </div>
-        
-        <div className="flex justify-end space-x-2 pt-4 border-t">
-          <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Export Templates
-          </Button>
-          <Button disabled={!selectedTemplate}>
-            Generate Certificates
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
