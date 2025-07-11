@@ -129,27 +129,27 @@ export function CertificateGenerator() {
               <h4 className="font-medium mb-2">Available Placeholders</h4>
               <div className="grid grid-cols-1 gap-2 text-xs">
                 <div className="flex justify-between">
-                  <span className="font-mono bg-muted px-2 py-1 rounded">{{studentName}}</span>
+                  <span className="font-mono bg-muted px-2 py-1 rounded">{"{{studentName}}"}</span>
                   <span className="text-muted-foreground">Student's full name</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-mono bg-muted px-2 py-1 rounded">{{courseName}}</span>
+                  <span className="font-mono bg-muted px-2 py-1 rounded">{"{{courseName}}"}</span>
                   <span className="text-muted-foreground">Course title</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-mono bg-muted px-2 py-1 rounded">{{completionDate}}</span>
+                  <span className="font-mono bg-muted px-2 py-1 rounded">{"{{completionDate}}"}</span>
                   <span className="text-muted-foreground">Completion date</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-mono bg-muted px-2 py-1 rounded">{{instructorName}}</span>
+                  <span className="font-mono bg-muted px-2 py-1 rounded">{"{{instructorName}}"}</span>
                   <span className="text-muted-foreground">Instructor name</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-mono bg-muted px-2 py-1 rounded">{{grade}}</span>
+                  <span className="font-mono bg-muted px-2 py-1 rounded">{"{{grade}}"}</span>
                   <span className="text-muted-foreground">Final grade</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-mono bg-muted px-2 py-1 rounded">{{certificateId}}</span>
+                  <span className="font-mono bg-muted px-2 py-1 rounded">{"{{certificateId}}"}</span>
                   <span className="text-muted-foreground">Unique certificate ID</span>
                 </div>
               </div>
