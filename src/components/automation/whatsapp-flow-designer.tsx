@@ -197,18 +197,7 @@ export function WhatsAppFlowDesigner() {
       stroke: isSelected ? '#3b82f6' : '#e2e8f0',
       strokeWidth: isSelected ? 2 : 1,
       rx: 12,
-      ry: 12,
-      shadow: new Shadow({
-        color: 'rgba(0, 0, 0, 0.1)',
-        blur: 8,
-        offsetX: 0,
-        offsetY: 2,
-        affectStroke: false,
-        includeDefaultValues: true,
-        nonScaling: false,
-        id: '',
-        type: 'shadow'
-      })
+      ry: 12
     });
 
     // Icon background
