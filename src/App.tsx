@@ -8,8 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
-const App = () => {
-  // Initialize QueryClient inside the component to ensure proper React context
+const App: React.FC = () => {
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
