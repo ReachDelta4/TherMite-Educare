@@ -5,18 +5,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Award, Upload, Download, FileText, Image } from "lucide-react";
+import { Award, Upload, Download, FileText, Image, Eye } from "lucide-react";
 import { useState } from "react";
 
 export function CertificateGenerator() {
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [studentData, setStudentData] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
 
   const templates = [
-    { id: "completion", name: "Course Completion", status: "active" },
-    { id: "achievement", name: "Achievement Award", status: "active" },
-    { id: "participation", name: "Participation", status: "draft" }
+    { id: "completion", name: "Course Completion", status: "active", preview: "/api/placeholder/400/300" },
+    { id: "achievement", name: "Achievement Award", status: "active", preview: "/api/placeholder/400/300" },
+    { id: "participation", name: "Participation", status: "draft", preview: "/api/placeholder/400/300" }
   ];
+
+  const sampleCertificateData = {
+    studentName: "John Doe",
+    courseName: "Full Stack Web Development",
+    completionDate: "March 15, 2024",
+    instructorName: "Dr. Sarah Johnson",
+    grade: "A+",
+    certificateId: "CERT-2024-001"
+  };
 
   return (
     <Card className="shadow-card">
@@ -71,6 +81,32 @@ export function CertificateGenerator() {
                 </Button>
               </div>
             </div>
+
+            {/* Certificate Preview */}
+            {selectedTemplate && (
+              <div className="space-y-2">
+                <Label>Certificate Preview</Label>
+                <div className="border rounded-lg p-4 bg-muted/20">
+                  <div className="aspect-[4/3] bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-dashed border-blue-200 rounded-lg flex items-center justify-center">
+                    <div className="text-center space-y-2">
+                      <Award className="h-12 w-12 text-blue-500 mx-auto" />
+                      <div className="space-y-1 text-sm">
+                        <p className="font-bold text-lg">Certificate of Completion</p>
+                        <p>This is to certify that</p>
+                        <p className="font-semibold text-blue-600">{sampleCertificateData.studentName}</p>
+                        <p>has successfully completed</p>
+                        <p className="font-semibold">{sampleCertificateData.courseName}</p>
+                        <p className="text-xs mt-2">Date: {sampleCertificateData.completionDate}</p>
+                        <p className="text-xs">Grade: {sampleCertificateData.grade}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    <p>Preview uses sample data. Actual certificates will use real student information.</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="space-y-4">
@@ -87,6 +123,37 @@ export function CertificateGenerator() {
                 </div>
               </div>
             </div>
+
+            {/* Available Placeholders */}
+            <div className="p-4 border rounded-lg bg-muted/50">
+              <h4 className="font-medium mb-2">Available Placeholders</h4>
+              <div className="grid grid-cols-1 gap-2 text-xs">
+                <div className="flex justify-between">
+                  <span className="font-mono bg-muted px-2 py-1 rounded">{{studentName}}</span>
+                  <span className="text-muted-foreground">Student's full name</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-mono bg-muted px-2 py-1 rounded">{{courseName}}</span>
+                  <span className="text-muted-foreground">Course title</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-mono bg-muted px-2 py-1 rounded">{{completionDate}}</span>
+                  <span className="text-muted-foreground">Completion date</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-mono bg-muted px-2 py-1 rounded">{{instructorName}}</span>
+                  <span className="text-muted-foreground">Instructor name</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-mono bg-muted px-2 py-1 rounded">{{grade}}</span>
+                  <span className="text-muted-foreground">Final grade</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-mono bg-muted px-2 py-1 rounded">{{certificateId}}</span>
+                  <span className="text-muted-foreground">Unique certificate ID</span>
+                </div>
+              </div>
+            </div>
             
             <div className="space-y-2">
               <Label>Template Management</Label>
@@ -96,8 +163,8 @@ export function CertificateGenerator() {
                   Edit Template
                 </Button>
                 <Button variant="outline" size="sm">
-                  <FileText className="h-4 w-4 mr-1" />
-                  Preview
+                  <Eye className="h-4 w-4 mr-1" />
+                  Full Preview
                 </Button>
               </div>
             </div>
