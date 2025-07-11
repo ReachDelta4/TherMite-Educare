@@ -1,5 +1,5 @@
 
-import * as React from "react";
+import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,8 +8,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
-const App: React.FC = () => {
-  const [queryClient] = React.useState(() => new QueryClient({
+const App = () => {
+  const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
         staleTime: 1000 * 60 * 5, // 5 minutes
