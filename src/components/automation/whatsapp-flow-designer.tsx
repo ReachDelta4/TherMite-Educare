@@ -1,30 +1,24 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Canvas as FabricCanvas, Circle, Rect, FabricText, Line, Group, Shadow } from "fabric";
+import { Canvas as FabricCanvas, Circle, Rect, FabricText, Line, Group } from "fabric";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   MessageSquare, 
   Bot, 
-  MousePointer, 
-  Link, 
   Trash2, 
   Save, 
   Plus, 
   Settings,
   Play,
   Zap,
-  ArrowRight,
-  Edit,
-  Copy,
   Eye,
-  Download
+  Download,
+  Link2
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -60,42 +54,43 @@ export function WhatsAppFlowDesigner() {
   const [connections, setConnections] = useState<Connection[]>([]);
   const [selectedNode, setSelectedNode] = useState<FlowNode | null>(null);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionStart, setConnectionStart] = useState<string | null>(null);
 
   const nodeTypes = [
     { 
       id: "message", 
       name: "Send Message", 
       icon: MessageSquare, 
-      color: "bg-blue-500",
+      color: "#3b82f6",
       description: "Send a text message to the user"
     },
     { 
       id: "ai-response", 
       name: "AI Response", 
       icon: Bot, 
-      color: "bg-purple-500",
+      color: "#8b5cf6",
       description: "Generate AI-powered response"
     },
     { 
       id: "condition", 
       name: "Condition", 
       icon: Zap, 
-      color: "bg-yellow-500",
+      color: "#eab308",
       description: "Create conditional logic paths"
     },
     { 
       id: "action", 
       name: "Action", 
       icon: Settings, 
-      color: "bg-green-500",
+      color: "#10b981",
       description: "Perform an action or webhook"
     },
     { 
       id: "delay", 
       name: "Delay", 
       icon: Play, 
-      color: "bg-orange-500",
+      color: "#f97316",
       description: "Add a time delay"
     }
   ];
@@ -107,11 +102,19 @@ export function WhatsAppFlowDesigner() {
       width: 1200,
       height: 700,
       backgroundColor: "#f8fafc",
+      selection: false, // Disable multi-selection
     });
+
+    // Prevent text selection and context menu
+    canvas.wrapperEl.style.userSelect = 'none';
+    canvas.wrapperEl.style.webkitUserSelect = 'none';
+    canvas.wrapperEl.addEventListener('contextmenu', e => e.preventDefault());
+    canvas.wrapperEl.addEventListener('selectstart', e => e.preventDefault());
 
     setFabricCanvas(canvas);
     renderFlow(canvas);
 
+    // Handle node selection and connection logic
     canvas.on('mouse:down', (options) => {
       if (options.target && (options.target as any).nodeId) {
         const nodeId = (options.target as any).nodeId;
@@ -119,6 +122,46 @@ export function WhatsAppFlowDesigner() {
         if (node) {
           setSelectedNode(node);
         }
+      }
+
+      // Handle connection point clicks
+      if (options.target && (options.target as any).isConnectionPoint) {
+        const nodeId = (options.target as any).nodeId;
+        if (isConnecting && connectionStart && connectionStart !== nodeId) {
+          // Complete connection
+          connectNodes(connectionStart, nodeId);
+          setIsConnecting(false);
+          setConnectionStart(null);
+        } else {
+          // Start connection
+          setIsConnecting(true);
+          setConnectionStart(nodeId);
+          toast("Click on another node's connection point to connect");
+        }
+      }
+    });
+
+    // Handle object movement
+    canvas.on('object:moving', (e) => {
+      const target = e.target;
+      if (target && (target as any).nodeId) {
+        const nodeId = (target as any).nodeId;
+        const node = nodes.find(n => n.id === nodeId);
+        if (node) {
+          // Update node position
+          setNodes(prev => prev.map(n => 
+            n.id === nodeId 
+              ? { ...n, position: { x: target.left || 0, y: target.top || 0 } }
+              : n
+          ));
+        }
+      }
+    });
+
+    // Handle double-click to open config
+    canvas.on('mouse:dblclick', (options) => {
+      if (options.target && (options.target as any).nodeId) {
+        setIsConfigOpen(true);
       }
     });
 
@@ -189,8 +232,8 @@ export function WhatsAppFlowDesigner() {
     
     // Node background
     const nodeRect = new Rect({
-      left: node.position.x,
-      top: node.position.y,
+      left: 0,
+      top: 0,
       width: 280,
       height: 100,
       fill: '#ffffff',
@@ -202,45 +245,64 @@ export function WhatsAppFlowDesigner() {
 
     // Icon background
     const iconBg = new Circle({
-      left: node.position.x + 20,
-      top: node.position.y + 20,
+      left: 20,
+      top: 30,
       radius: 16,
-      fill: nodeType.color.replace('bg-', '').replace('-500', '') === 'blue' ? '#3b82f6' :
-            nodeType.color.replace('bg-', '').replace('-500', '') === 'purple' ? '#8b5cf6' :
-            nodeType.color.replace('bg-', '').replace('-500', '') === 'yellow' ? '#eab308' :
-            nodeType.color.replace('bg-', '').replace('-500', '') === 'green' ? '#10b981' : '#f97316',
+      fill: nodeType.color,
     });
 
     // Node title
     const titleText = new FabricText(node.title, {
-      left: node.position.x + 60,
-      top: node.position.y + 20,
+      left: 60,
+      top: 20,
       fontSize: 14,
       fill: '#1e293b',
       fontWeight: '600',
-      fontFamily: 'Inter, system-ui, sans-serif'
+      fontFamily: 'Inter, system-ui, sans-serif',
+      selectable: false,
+      evented: false
     });
 
     // Node description
     const descText = new FabricText(node.description, {
-      left: node.position.x + 60,
-      top: node.position.y + 40,
+      left: 60,
+      top: 40,
       fontSize: 12,
       fill: '#64748b',
-      fontFamily: 'Inter, system-ui, sans-serif'
+      fontFamily: 'Inter, system-ui, sans-serif',
+      selectable: false,
+      evented: false
     });
 
-    // Add connection point
-    const connectionPoint = new Circle({
-      left: node.position.x + 270,
-      top: node.position.y + 45,
-      radius: 6,
+    // Output connection point
+    const outputPoint = new Circle({
+      left: 260,
+      top: 45,
+      radius: 8,
+      fill: isConnecting && connectionStart === node.id ? '#10b981' : '#e2e8f0',
+      stroke: '#94a3b8',
+      strokeWidth: 2,
+      selectable: false,
+    });
+
+    (outputPoint as any).isConnectionPoint = true;
+    (outputPoint as any).nodeId = node.id;
+
+    // Input connection point
+    const inputPoint = new Circle({
+      left: 10,
+      top: 45,
+      radius: 8,
       fill: '#e2e8f0',
       stroke: '#94a3b8',
       strokeWidth: 2,
+      selectable: false,
     });
 
-    const group = new Group([nodeRect, iconBg, titleText, descText, connectionPoint], {
+    (inputPoint as any).isConnectionPoint = true;
+    (inputPoint as any).nodeId = node.id;
+
+    const group = new Group([nodeRect, iconBg, titleText, descText], {
       left: node.position.x,
       top: node.position.y,
       selectable: true,
@@ -251,26 +313,33 @@ export function WhatsAppFlowDesigner() {
     (group as any).nodeId = node.id;
 
     canvas.add(group);
+    
+    // Add connection points separately so they can be clicked
+    outputPoint.set({
+      left: node.position.x + 270,
+      top: node.position.y + 45
+    });
+    inputPoint.set({
+      left: node.position.x + 10,
+      top: node.position.y + 45
+    });
+    
+    canvas.add(outputPoint);
+    if (node.type !== 'trigger') { // Triggers don't need input points
+      canvas.add(inputPoint);
+    }
   };
 
   const renderConnection = (canvas: FabricCanvas, fromNode: FlowNode, toNode: FlowNode) => {
     const startX = fromNode.position.x + 280;
     const startY = fromNode.position.y + 50;
-    const endX = toNode.position.x;
+    const endX = toNode.position.x + 10;
     const endY = toNode.position.y + 50;
 
-    // Create curved connection line
-    const controlX1 = startX + 50;
-    const controlY1 = startY;
-    const controlX2 = endX - 50;
-    const controlY2 = endY;
-
-    const path = `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
-    
-    const connectionLine = new (FabricCanvas as any).Path(path, {
+    // Simple straight line for now
+    const connectionLine = new Line([startX, startY, endX, endY], {
       stroke: '#94a3b8',
       strokeWidth: 2,
-      fill: '',
       selectable: false,
       evented: false,
     });
@@ -278,19 +347,31 @@ export function WhatsAppFlowDesigner() {
     canvas.add(connectionLine);
 
     // Add arrow head
-    const arrowHead = new (FabricCanvas as any).Polygon([
-      {x: 0, y: 0},
-      {x: -10, y: -5},
-      {x: -10, y: 5}
-    ], {
-      left: endX - 5,
-      top: endY,
-      fill: '#94a3b8',
+    const angle = Math.atan2(endY - startY, endX - startX);
+    const arrowLength = 10;
+    const arrowAngle = Math.PI / 6;
+
+    const arrowX1 = endX - arrowLength * Math.cos(angle - arrowAngle);
+    const arrowY1 = endY - arrowLength * Math.sin(angle - arrowAngle);
+    const arrowX2 = endX - arrowLength * Math.cos(angle + arrowAngle);
+    const arrowY2 = endY - arrowLength * Math.sin(angle + arrowAngle);
+
+    const arrowHead1 = new Line([endX, endY, arrowX1, arrowY1], {
+      stroke: '#94a3b8',
+      strokeWidth: 2,
       selectable: false,
       evented: false,
     });
 
-    canvas.add(arrowHead);
+    const arrowHead2 = new Line([endX, endY, arrowX2, arrowY2], {
+      stroke: '#94a3b8',
+      strokeWidth: 2,
+      selectable: false,
+      evented: false,
+    });
+
+    canvas.add(arrowHead1);
+    canvas.add(arrowHead2);
   };
 
   const addNode = (type: string) => {
@@ -324,9 +405,16 @@ export function WhatsAppFlowDesigner() {
   };
 
   const connectNodes = (fromId: string, toId: string) => {
+    // Check if connection already exists
+    const exists = connections.some(c => c.from === fromId && c.to === toId);
+    if (exists) {
+      toast("Nodes are already connected");
+      return;
+    }
+
     const newConnection: Connection = { from: fromId, to: toId };
     setConnections(prev => [...prev, newConnection]);
-    toast("Nodes connected");
+    toast("Nodes connected successfully!");
   };
 
   const saveFlow = () => {
@@ -345,8 +433,14 @@ export function WhatsAppFlowDesigner() {
     }
   };
 
+  const clearConnecting = () => {
+    setIsConnecting(false);
+    setConnectionStart(null);
+    toast("Connection cancelled");
+  };
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 select-none">
       {/* Header */}
       <Card className="border-0 bg-gradient-subtle">
         <CardHeader className="pb-4">
@@ -367,6 +461,12 @@ export function WhatsAppFlowDesigner() {
               <Badge variant="secondary" className="px-3 py-1">
                 {connections.length} Connections
               </Badge>
+              {isConnecting && (
+                <Badge variant="destructive" className="px-3 py-1 cursor-pointer" onClick={clearConnecting}>
+                  <Link2 className="h-3 w-3 mr-1" />
+                  Connecting... (Click to cancel)
+                </Badge>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -392,8 +492,8 @@ export function WhatsAppFlowDesigner() {
                   onClick={() => addNode(nodeType.id)}
                 >
                   <div className="flex items-start space-x-3">
-                    <div className={`p-2 rounded-lg ${nodeType.color} bg-opacity-20`}>
-                      <nodeType.icon className="h-4 w-4" />
+                    <div className="p-2 rounded-lg" style={{ backgroundColor: nodeType.color + '20' }}>
+                      <nodeType.icon className="h-4 w-4" style={{ color: nodeType.color }} />
                     </div>
                     <div className="text-left">
                       <div className="font-medium text-sm">{nodeType.name}</div>
@@ -428,13 +528,40 @@ export function WhatsAppFlowDesigner() {
               </Button>
             </CardContent>
           </Card>
+
+          {isConnecting && (
+            <Card className="border-orange-200 bg-orange-50">
+              <CardContent className="p-4">
+                <div className="text-sm text-orange-700">
+                  <strong>Connection Mode:</strong> Click on another node's connection point to create a link.
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full mt-2" 
+                  onClick={clearConnecting}
+                >
+                  Cancel Connection
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         <div className="lg:col-span-4">
           <Card>
             <CardContent className="p-0">
               <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-lg overflow-hidden border-2 border-dashed border-border">
-                <canvas ref={canvasRef} className="w-full" />
+                <canvas 
+                  ref={canvasRef} 
+                  className="w-full cursor-pointer" 
+                  style={{ 
+                    userSelect: 'none', 
+                    WebkitUserSelect: 'none',
+                    MozUserSelect: 'none',
+                    msUserSelect: 'none'
+                  }} 
+                />
               </div>
             </CardContent>
           </Card>
@@ -464,7 +591,11 @@ export function WhatsAppFlowDesigner() {
                   <Input 
                     value={selectedNode.title} 
                     onChange={(e) => {
-                      setSelectedNode(prev => prev ? {...prev, title: e.target.value} : null);
+                      const newTitle = e.target.value;
+                      setSelectedNode(prev => prev ? {...prev, title: newTitle} : null);
+                      setNodes(prev => prev.map(n => 
+                        n.id === selectedNode.id ? {...n, title: newTitle} : n
+                      ));
                     }}
                   />
                 </div>
@@ -473,7 +604,11 @@ export function WhatsAppFlowDesigner() {
                   <Textarea 
                     value={selectedNode.description}
                     onChange={(e) => {
-                      setSelectedNode(prev => prev ? {...prev, description: e.target.value} : null);
+                      const newDesc = e.target.value;
+                      setSelectedNode(prev => prev ? {...prev, description: newDesc} : null);
+                      setNodes(prev => prev.map(n => 
+                        n.id === selectedNode.id ? {...n, description: newDesc} : n
+                      ));
                     }}
                   />
                 </div>
