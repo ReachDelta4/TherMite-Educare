@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { Canvas as FabricCanvas, Circle, Rect, FabricText, Line, FabricImage } from "fabric";
 import { Button } from "@/components/ui/button";
@@ -255,7 +254,8 @@ export function CertificateBuilder() {
     if (!fabricCanvas) return;
     const dataURL = fabricCanvas.toDataURL({
       format: 'png',
-      quality: 1.0
+      quality: 1.0,
+      multiplier: 1.0
     });
     
     const link = document.createElement('a');
