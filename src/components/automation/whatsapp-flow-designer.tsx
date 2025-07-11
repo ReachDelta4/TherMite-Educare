@@ -1,6 +1,5 @@
-
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Canvas as FabricCanvas, Circle, Rect, FabricText, Line, Group } from "fabric";
+import { Canvas as FabricCanvas, Circle, Rect, FabricText, Line, Group, Shadow } from "fabric";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -114,8 +113,8 @@ export function WhatsAppFlowDesigner() {
     renderFlow(canvas);
 
     canvas.on('mouse:down', (options) => {
-      if (options.target && options.target.data?.nodeId) {
-        const nodeId = options.target.data.nodeId;
+      if (options.target && (options.target as any).nodeId) {
+        const nodeId = (options.target as any).nodeId;
         const node = nodes.find(n => n.id === nodeId);
         if (node) {
           setSelectedNode(node);
@@ -199,12 +198,17 @@ export function WhatsAppFlowDesigner() {
       strokeWidth: isSelected ? 2 : 1,
       rx: 12,
       ry: 12,
-      shadow: {
+      shadow: new Shadow({
         color: 'rgba(0, 0, 0, 0.1)',
         blur: 8,
         offsetX: 0,
-        offsetY: 2
-      }
+        offsetY: 2,
+        affectStroke: false,
+        includeDefaultValues: true,
+        nonScaling: false,
+        id: '',
+        type: 'shadow'
+      })
     });
 
     // Icon background
@@ -253,8 +257,9 @@ export function WhatsAppFlowDesigner() {
       selectable: true,
       hasControls: false,
       hasBorders: false,
-      data: { nodeId: node.id }
     });
+
+    (group as any).nodeId = node.id;
 
     canvas.add(group);
   };
@@ -273,7 +278,7 @@ export function WhatsAppFlowDesigner() {
 
     const path = `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
     
-    const connectionLine = new fabric.Path(path, {
+    const connectionLine = new (FabricCanvas as any).Path(path, {
       stroke: '#94a3b8',
       strokeWidth: 2,
       fill: '',
@@ -284,7 +289,7 @@ export function WhatsAppFlowDesigner() {
     canvas.add(connectionLine);
 
     // Add arrow head
-    const arrowHead = new fabric.Polygon([
+    const arrowHead = new (FabricCanvas as any).Polygon([
       {x: 0, y: 0},
       {x: -10, y: -5},
       {x: -10, y: 5}
@@ -378,10 +383,9 @@ export function WhatsAppFlowDesigner() {
         </CardHeader>
       </Card>
 
+      {/* main content and dialogs */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Sidebar */}
         <div className="lg:col-span-1 space-y-4">
-          {/* Node Library */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center">
@@ -412,7 +416,6 @@ export function WhatsAppFlowDesigner() {
             </CardContent>
           </Card>
 
-          {/* Quick Actions */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Actions</CardTitle>
@@ -438,7 +441,6 @@ export function WhatsAppFlowDesigner() {
           </Card>
         </div>
 
-        {/* Canvas */}
         <div className="lg:col-span-4">
           <Card>
             <CardContent className="p-0">
@@ -450,7 +452,6 @@ export function WhatsAppFlowDesigner() {
         </div>
       </div>
 
-      {/* Node Configuration Dialog */}
       <Dialog open={isConfigOpen} onOpenChange={setIsConfigOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
