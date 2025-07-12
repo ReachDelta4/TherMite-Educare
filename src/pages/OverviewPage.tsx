@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { 
   Bot, BookOpen, Sparkles, KeyRound, BarChartHorizontalBig, Send, Users, Paintbrush, Cpu, ArrowRight, Mail, Phone, Clock, TrendingUp, Shield, Star, CheckCircle, AlertTriangle, Heart,
-  FileText, PieChart, FlowChart, MessageSquare, Workflow, Lock, Database, BarChart4, FileBarChart
+  FileText, PieChart, MessageSquare, Workflow, Lock, Database, BarChart4, FileBarChart
 } from "lucide-react";
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -137,7 +137,6 @@ export const OverviewPage: React.FC = () => {
             icon={Workflow}
             title="Visual WhatsApp Flow Builder"
             description="Design complex conversation flows with our drag-and-drop builder. Create branching paths, decision points, and personalized responses without writing a single line of code."
-            badge="New"
           />
           <FeatureCard 
             icon={MessageSquare}
@@ -164,7 +163,6 @@ export const OverviewPage: React.FC = () => {
             icon={Database}
             title="Central Management System"
             description="Say goodbye to scattered spreadsheets. All your data lives in one secure place, accessible to the right people at the right time. Your entire business operation, centralized."
-            badge="Core Feature"
           />
           <FeatureCard 
             icon={KeyRound}
