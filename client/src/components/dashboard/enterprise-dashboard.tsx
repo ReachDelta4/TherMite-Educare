@@ -1,17 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
 import { 
   TrendingUp, TrendingDown, Users, UserCheck, PhoneCall, MessageSquare, 
   Award, GraduationCap, IndianRupee, Target, Filter, Calendar,
-  BookOpen, Stethoscope, Calculator, Brain, Download, RefreshCw
+  BookOpen, Stethoscope, Calculator, Brain, Download, RefreshCw,
+  AlertTriangle, CheckCircle, Clock, MapPin, Zap, Globe, 
+  Eye, Activity, DollarSign, Percent, BarChart4, PieChart as PieChartIcon,
+  LineChart as LineChartIcon, Star, Briefcase, Mail, Phone,
+  Cpu, Database, Shield, TrendingDown as TrendingDownIcon,
+  ArrowUpRight, ArrowDownRight, Calendar as CalendarIcon,
+  Search, Settings, MoreHorizontal, Play, Pause, ChevronRight,
+  Building, UserPlus, FileText, Send, MessageCircle
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   LineChart, Line, PieChart, Pie, Cell, FunnelChart, Funnel, LabelList,
-  AreaChart, Area, ComposedChart
+  AreaChart, Area, ComposedChart, RadarChart, PolarGrid, PolarAngleAxis, 
+  PolarRadiusAxis, Radar, ScatterChart, Scatter, ReferenceLine,
+  TreemapChart, Treemap, SankeyChart, Sankey
 } from "recharts";
 
 // Business Metrics Data for TherMite Educare

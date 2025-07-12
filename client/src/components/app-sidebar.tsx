@@ -44,14 +44,6 @@ const navigationItems = [
     description: "A Tour of Your Future Platform",
   },
   {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: BarChart3,
-    description: "Enterprise Analytics & Reports",
-    badge: "Live",
-    badgeVariant: "default" as const,
-  },
-  {
     title: "WhatsApp Bot",
     url: "/whatsapp",
     icon: MessageSquare,
@@ -88,11 +80,15 @@ const userManagementItems = [
   { title: "Roles & Permissions", icon: UserCog, url: "/users/roles" },
 ];
 
-const analyticsItems = [
-  { title: "Advanced Analytics", icon: LineChart, url: "/analytics" },
-  { title: "Report Builder", icon: FileText, url: "/reports" },
-  { title: "Export Data", icon: Download, url: "/analytics/export" },
-  { title: "Scheduled Reports", icon: Clock, url: "/analytics/scheduled" },
+const dashboardItems = [
+  { title: "Executive Overview", icon: BarChart3, url: "/dashboard" },
+  { title: "Sales Intelligence", icon: LineChart, url: "/dashboard/sales" },
+  { title: "Student Analytics", icon: Users, url: "/dashboard/students" },
+  { title: "Revenue Analytics", icon: Download, url: "/dashboard/revenue" },
+  { title: "Marketing ROI", icon: FileText, url: "/dashboard/marketing" },
+  { title: "Operational KPIs", icon: Clock, url: "/dashboard/operations" },
+  { title: "Predictive Analytics", icon: Fingerprint, url: "/dashboard/predictive" },
+  { title: "Real-time Reports", icon: BarChart3, url: "/dashboard/realtime" },
 ];
 
 export function AppSidebar() {
@@ -153,6 +149,36 @@ export function AppSidebar() {
                               </Badge>
                             )}
                           </div>
+                        </div>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <Separator className="my-2 mx-2" />
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase flex items-center">
+            <BarChart3 className="h-4 w-4 mr-2" />
+            Dashboard & Analytics
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu className="space-y-1">
+              {dashboardItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild tooltip={collapsed ? item.title : undefined}>
+                    <NavLink
+                      to={item.url}
+                      className={`flex items-center p-3 rounded-lg transition-colors ${getNavClass(item.url)} ${collapsed ? 'justify-center' : ''}`}
+                    >
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      {!collapsed && (
+                        <div className="flex-1 ml-3 min-w-0">
+                          <span className="font-medium text-sm truncate">{item.title}</span>
                         </div>
                       )}
                     </NavLink>

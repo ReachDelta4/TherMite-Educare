@@ -10,7 +10,7 @@ import { Helmet, HelmetProvider } from "react-helmet-async";
 
 const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-const EnterpriseDashboard = lazy(() => import("@/components/dashboard/enterprise-dashboard").then(m => ({ default: m.EnterpriseDashboard })));
+const PowerhouseDashboard = lazy(() => import("@/components/dashboard/powerhouse-dashboard").then(m => ({ default: m.PowerhouseDashboard })));
 const WhatsAppBot = lazy(() => import("@/components/automation/whatsapp-bot").then(m => ({ default: m.WhatsAppBot })));
 const CertificateGenerator = lazy(() => import("@/components/automation/certificate-generator").then(m => ({ default: m.CertificateGenerator })));
 const AICallingAgent = lazy(() => import("@/components/automation/ai-calling-agent").then(m => ({ default: m.AICallingAgent })));
@@ -47,7 +47,7 @@ const App: React.FC = () => {
               <Routes>
                 <Route path="/" element={<Index />}>
                   <Route index element={<OverviewPage />} />
-                  <Route path="dashboard" element={<EnterpriseDashboard />} />
+                  <Route path="dashboard/*" element={<PowerhouseDashboard />} />
                   <Route path="overview" element={<OverviewPage />} />
                   <Route path="whatsapp" element={<WhatsAppBot />} />
                   <Route path="certificates" element={<CertificateGenerator />} />
