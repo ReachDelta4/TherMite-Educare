@@ -46,8 +46,8 @@ const navigationItems = [
   {
     title: "Dashboard",
     url: "/dashboard",
-    icon: Home,
-    description: "Mission Control Center",
+    icon: BarChart3,
+    description: "Enterprise Analytics & Reports",
     badge: "Live",
     badgeVariant: "default" as const,
   },
@@ -192,34 +192,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <Separator className="my-2 mx-2" />
 
-        <SidebarGroup>
-          <SidebarGroupLabel className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase">
-            Analytics & Reports
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
-              {analyticsItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={collapsed ? item.title : undefined}>
-                    <NavLink
-                      to={item.url}
-                      className={`flex items-center p-3 rounded-lg transition-colors ${getNavClass(item.url)} ${collapsed ? 'justify-center' : ''}`}
-                    >
-                      <item.icon className="h-5 w-5 flex-shrink-0" />
-                      {!collapsed && (
-                        <div className="flex-1 ml-3 min-w-0">
-                          <span className="font-medium text-sm truncate">{item.title}</span>
-                        </div>
-                      )}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
 
         <Separator className="my-2 mx-2" />
         
