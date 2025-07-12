@@ -17,9 +17,10 @@ const CertificateBuilderPage = lazy(() => import("./pages/CertificateBuilderPage
 const UserManagement = lazy(() => import("@/components/user-management/user-management").then(m => ({ default: m.UserManagement })));
 const UserProfile = lazy(() => import("@/components/user-management/user-profile").then(m => ({ default: m.UserProfile })));
 const RolesPermissions = lazy(() => import("@/components/user-management/roles-permissions").then(m => ({ default: m.RolesPermissions })));
-const SecuritySettingsPage = lazy(() => import("@/components/user-management/security-settings").then(m => ({ default: m.SecuritySettingsPage })));
 const AdvancedAnalytics = lazy(() => import("@/components/analytics/advanced-analytics").then(m => ({ default: m.AdvancedAnalytics })));
 const ReportBuilder = lazy(() => import("@/components/analytics/report-builder").then(m => ({ default: m.ReportBuilder })));
+const ScheduledReportsPage = lazy(() => import("./pages/ScheduledReportsPage").then(m => ({ default: m.ScheduledReportsPage })));
+const OverviewPage = lazy(() => import("./pages/OverviewPage").then(m => ({ default: m.OverviewPage })));
 
 
 const App: React.FC = () => {
@@ -41,7 +42,9 @@ const App: React.FC = () => {
           <Suspense fallback={<FullPageLoader />}>
             <Routes>
               <Route path="/" element={<Index />}>
-                <Route index element={<CustomizableDashboard />} />
+                <Route index element={<OverviewPage />} />
+                <Route path="dashboard" element={<CustomizableDashboard />} />
+                <Route path="overview" element={<OverviewPage />} />
                 <Route path="whatsapp" element={<WhatsAppBot />} />
                 <Route path="certificates" element={<CertificateGenerator />} />
                 <Route path="ai-calling" element={<AICallingAgent />} />
@@ -50,11 +53,11 @@ const App: React.FC = () => {
                 <Route path="users" element={<UserManagement />} />
                 <Route path="profile" element={<UserProfile />} />
                 <Route path="users/roles" element={<RolesPermissions />} />
-                <Route path="users/security" element={<SecuritySettingsPage />} />
                 
                 {/* Analytics Routes */}
                 <Route path="analytics" element={<AdvancedAnalytics />} />
                 <Route path="reports" element={<ReportBuilder />} />
+                <Route path="analytics/scheduled" element={<ScheduledReportsPage />} />
               </Route>
               <Route path="/certificate-builder" element={<CertificateBuilderPage />} />
               <Route path="/certificate-builder/:templateId" element={<CertificateBuilderPage />} />

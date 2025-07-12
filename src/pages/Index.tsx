@@ -10,49 +10,60 @@ const IndexContent = () => {
   const collapsed = state === "collapsed";
   
   const getPageTitle = () => {
-    switch (location.pathname) {
-      case "/":
-        return "Dashboard";
-      case "/whatsapp":
-        return "WhatsApp Automation";
-      case "/certificates":
-        return "Certificate Generator";
-      case "/ai-calling":
-        return "AI Calling Agent";
-      case "/analytics":
-        return "Analytics";
-      default:
-        return "Dashboard";
+    const path = location.pathname;
+    
+    if (path === "/") return "Dashboard";
+    if (path === "/overview") return "Platform Overview & Proposal";
+    if (path === "/whatsapp") return "WhatsApp Automation";
+    if (path === "/certificates") return "Certificate Generator";
+    if (path === "/ai-calling") return "AI Calling Agent";
+    if (path === "/users") return "User Management";
+    if (path === "/profile") return "My Profile";
+    if (path === "/users/roles") return "Roles & Permissions";
+    if (path === "/analytics") return "Advanced Analytics";
+    if (path === "/reports") return "Report Builder";
+    if (path === "/analytics/export") return "Export Data";
+    if (path === "/analytics/scheduled") return "Scheduled Reports";
+    
+    // Extract the base path for default cases
+    const basePath = path.split('/')[1];
+    if (basePath) {
+      return basePath.charAt(0).toUpperCase() + basePath.slice(1).replace(/-/g, ' ');
     }
+    
+    return "Dashboard";
   };
 
   const getPageDescription = () => {
-    switch (location.pathname) {
-      case "/":
-        return "Monitor your automation performance";
-      case "/whatsapp":
-        return "Create and manage WhatsApp campaigns";
-      case "/certificates":
-        return "Generate professional certificates";
-      case "/ai-calling":
-        return "Automated calling and voice interactions";
-      case "/analytics":
-        return "Detailed performance analytics";
-      default:
-        return "Monitor your automation performance";
-    }
+    const path = location.pathname;
+    
+    if (path === "/") return "Monitor your automation performance";
+    if (path === "/overview") return "A special proposal for TherMite Educare";
+    if (path === "/whatsapp") return "Create and manage WhatsApp campaigns";
+    if (path === "/certificates") return "Generate professional certificates";
+    if (path === "/ai-calling") return "Automated calling and voice interactions";
+    if (path === "/users") return "Manage users and access";
+    if (path === "/profile") return "Your account settings";
+    if (path === "/users/roles") return "Configure roles and permissions";
+    if (path === "/analytics") return "Detailed performance analytics";
+    if (path === "/reports") return "Create custom reports";
+    if (path === "/analytics/export") return "Export your data";
+    if (path === "/analytics/scheduled") return "Set up automated report delivery";
+    
+    return "TherMite Educare Platform";
   };
 
   return (
     <div className="min-h-screen flex w-full bg-background relative">
       <AppSidebar />
       
-      {/* Custom Toggle Button */}
+      {/* Custom Toggle Button - Fixed position with z-index to ensure visibility */}
       <div 
-        className="absolute top-1/2 z-50 transition-all duration-300 ease-in-out"
+        className="fixed top-1/2 z-50 transition-all duration-300 ease-in-out"
         style={{
-          left: collapsed ? '3rem' : '16rem',
-          transform: 'translateX(-50%) translateY(-50%)'
+          left: collapsed ? '3.5rem' : '16.5rem',
+          transform: 'translateY(-50%)',
+          zIndex: 100
         }}
       >
         <Button
@@ -60,6 +71,7 @@ const IndexContent = () => {
           size="icon"
           variant="outline"
           className="h-8 w-8 rounded-full bg-background border-2 shadow-lg hover:border-accent/50 transition-all hover:scale-110"
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? (
             <ChevronRight className="h-4 w-4 text-accent" />
@@ -70,19 +82,7 @@ const IndexContent = () => {
       </div>
       
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Header */}
-        <header className="h-14 flex items-center border-b border-border bg-background px-6 flex-shrink-0">
-          <div className="flex items-center space-x-4 min-w-0">
-            <SidebarTrigger className="flex-shrink-0" />
-            <div className="min-w-0 overflow-hidden">
-              <h1 className="font-semibold text-lg truncate">{getPageTitle()}</h1>
-              <p className="text-sm text-muted-foreground truncate">{getPageDescription()}</p>
-            </div>
-          </div>
-          <div className="ml-auto h-1 w-24 bg-gradient-purple rounded-full opacity-70"></div>
-        </header>
-
-        {/* Main Content */}
+        {/* Main Content - Header removed from all tabs */}
         <main className="flex-1 p-6 overflow-auto min-w-0">
           <Outlet />
         </main>

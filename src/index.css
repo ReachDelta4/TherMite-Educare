@@ -135,3 +135,51 @@ All colors MUST be HSL.
     overflow-x: hidden;
   }
 }
+
+/* Custom scrollbar styles */
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 20px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.5);
+  }
+  
+  /* Hide scrollbar when collapsed */
+  .group-data-\[collapsible\=icon\]:scrollbar-none {
+    scrollbar-width: none;
+  }
+  
+  .group-data-\[collapsible\=icon\]:scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Fix for icon cutoff in collapsed state */
+[data-collapsible="icon"] [data-sidebar="menu-button"] svg {
+  margin: 0 auto;
+}
+
+/* Ensure consistent sidebar width */
+[data-sidebar="sidebar"] {
+  width: var(--sidebar-width, 16rem) !important;
+}
+
+[data-collapsible="icon"] [data-sidebar="sidebar"] {
+  width: var(--sidebar-width-icon, 3rem) !important;
+}

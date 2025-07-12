@@ -561,16 +561,18 @@ export function CustomizableDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={{}} className="h-64">
-                <RechartsPrimitive.ComposedChart data={leadTrendData}>
-                  <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
-                  <RechartsPrimitive.XAxis dataKey="month" />
-                  <RechartsPrimitive.YAxis />
-                  <ChartTooltip />
-                  <RechartsPrimitive.Bar dataKey="leads" fill="#2563eb" name="Total Leads" />
-                  <RechartsPrimitive.Line type="monotone" dataKey="qualified" stroke="#f59e0b" name="Qualified" />
-                  <RechartsPrimitive.Line type="monotone" dataKey="converted" stroke="#10b981" name="Converted" />
-                </RechartsPrimitive.ComposedChart>
+              <ChartContainer config={{}} className="h-64 w-full">
+                <RechartsPrimitive.ResponsiveContainer width="100%" height="100%">
+                  <RechartsPrimitive.ComposedChart data={leadTrendData}>
+                    <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
+                    <RechartsPrimitive.XAxis dataKey="month" />
+                    <RechartsPrimitive.YAxis />
+                    <ChartTooltip />
+                    <RechartsPrimitive.Bar dataKey="leads" fill="#2563eb" name="Total Leads" />
+                    <RechartsPrimitive.Line type="monotone" dataKey="qualified" stroke="#f59e0b" name="Qualified" />
+                    <RechartsPrimitive.Line type="monotone" dataKey="converted" stroke="#10b981" name="Converted" />
+                  </RechartsPrimitive.ComposedChart>
+                </RechartsPrimitive.ResponsiveContainer>
               </ChartContainer>
             </CardContent>
           </Card>
@@ -582,23 +584,25 @@ export function CustomizableDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={{}} className="h-64">
-                <RechartsPrimitive.PieChart>
-                  <RechartsPrimitive.Pie
-                    data={channelDistribution}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    label={({ name, value }) => `${name}: ${value}%`}
-                  >
-                    {channelDistribution.map((entry, index) => (
-                      <RechartsPrimitive.Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </RechartsPrimitive.Pie>
-                  <ChartTooltip />
-                </RechartsPrimitive.PieChart>
+              <ChartContainer config={{}} className="h-64 w-full">
+                <RechartsPrimitive.ResponsiveContainer width="100%" height="100%">
+                  <RechartsPrimitive.PieChart>
+                    <RechartsPrimitive.Pie
+                      data={channelDistribution}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      label={({ name, value }) => `${name}: ${value}%`}
+                    >
+                      {channelDistribution.map((entry, index) => (
+                        <RechartsPrimitive.Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </RechartsPrimitive.Pie>
+                    <ChartTooltip />
+                  </RechartsPrimitive.PieChart>
+                </RechartsPrimitive.ResponsiveContainer>
               </ChartContainer>
             </CardContent>
           </Card>

@@ -38,12 +38,11 @@ import {
 const mockUsers = [
   { 
     id: 1, 
-    name: "John Doe", 
+    name: "Barath Anthony", 
     email: "john@thermite.edu", 
     role: "Admin", 
     status: "Active",
     lastLogin: "2024-07-24 10:30 AM",
-    twoFactorEnabled: true,
   },
   { 
     id: 2, 
@@ -52,7 +51,6 @@ const mockUsers = [
     role: "Manager", 
     status: "Active",
     lastLogin: "2024-07-24 09:15 AM",
-    twoFactorEnabled: true,
   },
   { 
     id: 3, 
@@ -61,7 +59,6 @@ const mockUsers = [
     role: "Operator", 
     status: "Inactive",
     lastLogin: "2024-07-20 02:45 PM",
-    twoFactorEnabled: false,
   },
 ];
 
@@ -128,7 +125,6 @@ export function UserManagement() {
                 <TableHead className="w-[250px]">User</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>2FA</TableHead>
                 <TableHead>Last Login</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -157,19 +153,6 @@ export function UserManagement() {
                       )}
                       {user.status}
                     </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {user.twoFactorEnabled ? (
-                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        Enabled
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-                        <AlertCircle className="h-3 w-3 mr-1" />
-                        Disabled
-                      </Badge>
-                    )}
                   </TableCell>
                   <TableCell>{user.lastLogin}</TableCell>
                   <TableCell className="text-right">

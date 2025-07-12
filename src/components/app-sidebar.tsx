@@ -11,6 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,13 +32,20 @@ import {
   Download,
   Clock,
   UserCog,
-  Fingerprint
+  Fingerprint,
+  LayoutDashboard
 } from "lucide-react";
 
 const navigationItems = [
   {
+    title: "Overview Demo",
+    url: "/overview",
+    icon: LayoutDashboard,
+    description: "A Tour of Your Future Platform",
+  },
+  {
     title: "Dashboard",
-    url: "/",
+    url: "/dashboard",
     icon: Home,
     description: "Mission Control Center",
     badge: "Live",
@@ -78,7 +86,6 @@ const userManagementItems = [
   { title: "User Management", icon: Users, url: "/users" },
   { title: "My Profile", icon: User, url: "/profile" },
   { title: "Roles & Permissions", icon: UserCog, url: "/users/roles" },
-  { title: "2FA Security", icon: Fingerprint, url: "/users/security" },
 ];
 
 const analyticsItems = [
@@ -106,162 +113,157 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar className="transition-all duration-300 ease-in-out border-r bg-background flex flex-col h-full overflow-hidden" collapsible="icon">
-      <SidebarHeader className="border-b p-4 flex-shrink-0 bg-gradient-purple">
-        <div className={`flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
-          <img src="/logo.png" alt="TherMite Logo" className="h-10 w-auto" />
-          {!collapsed && (
-            <div className="flex flex-col">
-              <h2 className="font-bold text-lg text-white">
-                TherMite
-              </h2>
-              <p className="text-xs text-white/80">Educare Platform</p>
-            </div>
-          )}
+    <Sidebar 
+      className="transition-all duration-300 ease-in-out border-r bg-background flex flex-col h-full" 
+      collapsible="icon"
+    >
+      <SidebarHeader className="border-b flex-shrink-0">
+        <div className={`flex items-center justify-center ${collapsed ? 'p-2' : 'p-4'}`}>
+          <img
+            src="/logo.png"
+            alt="TherMite Logo"
+            className={`object-contain ${collapsed ? 'h-8 w-8' : 'h-16'}`}
+          />
         </div>
       </SidebarHeader>
 
-      <div className="flex-1 relative overflow-y-auto overflow-x-hidden">
-        <div className="p-2">
-          <SidebarGroup>
-            <SidebarGroupLabel className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase">
-              Navigation
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu className="space-y-1">
-                {navigationItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild tooltip={collapsed ? item.title : undefined}>
-                      <NavLink
-                        to={item.url}
-                        className={`flex items-center p-3 rounded-lg transition-colors ${getNavClass(item.url)} ${collapsed ? 'justify-center' : ''}`}
-                      >
-                        <item.icon className="h-5 w-5 flex-shrink-0" />
-                        {!collapsed && (
-                          <div className="flex-1 ml-3 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <span className="font-medium text-sm truncate">{item.title}</span>
+      <SidebarContent className="p-2 flex-grow overflow-y-auto scrollbar-thin">
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase">
+            Navigation
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu className="space-y-1">
+              {navigationItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild tooltip={collapsed ? item.title : undefined}>
+                    <NavLink
+                      to={item.url}
+                      end={item.url === "/"}
+                      className={`flex items-center p-3 rounded-lg transition-colors ${getNavClass(item.url)} ${collapsed ? 'justify-center' : ''}`}
+                    >
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      {!collapsed && (
+                        <div className="flex-1 ml-3 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-sm truncate">{item.title}</span>
+                            {item.badge && (
                               <Badge variant={item.badgeVariant} className="text-xs flex-shrink-0 ml-2">
                                 {item.badge}
                               </Badge>
-                            </div>
+                            )}
                           </div>
-                        )}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+                        </div>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-          <Separator className="my-2 mx-2" />
+        <Separator className="my-2 mx-2" />
 
-          <SidebarGroup>
-            <SidebarGroupLabel className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase">
-              User Management
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu className="space-y-1">
-                {userManagementItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild tooltip={collapsed ? item.title : undefined}>
-                      <NavLink
-                        to={item.url}
-                        className={`flex items-center p-3 rounded-lg transition-colors ${getNavClass(item.url)} ${collapsed ? 'justify-center' : ''}`}
-                      >
-                        <item.icon className="h-5 w-5 flex-shrink-0" />
-                        {!collapsed && (
-                          <div className="flex-1 ml-3 min-w-0">
-                            <span className="font-medium text-sm truncate">{item.title}</span>
-                          </div>
-                        )}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-
-          <Separator className="my-2 mx-2" />
-
-          <SidebarGroup>
-            <SidebarGroupLabel className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase">
-              Analytics & Reports
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu className="space-y-1">
-                {analyticsItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild tooltip={collapsed ? item.title : undefined}>
-                      <NavLink
-                        to={item.url}
-                        className={`flex items-center p-3 rounded-lg transition-colors ${getNavClass(item.url)} ${collapsed ? 'justify-center' : ''}`}
-                      >
-                        <item.icon className="h-5 w-5 flex-shrink-0" />
-                        {!collapsed && (
-                          <div className="flex-1 ml-3 min-w-0">
-                            <span className="font-medium text-sm truncate">{item.title}</span>
-                          </div>
-                        )}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-
-          <Separator className="my-2 mx-2" />
-          
-          <SidebarGroup>
-            <SidebarGroupLabel className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase">
-              Quick Actions
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <div className="grid grid-cols-2 gap-2 p-2 group-data-[collapsible=icon]:grid-cols-1">
-                {quickActions.map((action) => (
-                  <Button
-                    key={action.title}
-                    variant="outline"
-                    size="sm"
-                    className="h-auto p-2 flex flex-col items-center gap-1 hover:bg-muted group-data-[collapsible=icon]:aspect-square group-data-[collapsible=icon]:p-1"
-                    title={collapsed ? action.title : undefined}
-                  >
-                    <action.icon className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-xs font-normal group-data-[collapsible=icon]:hidden">{action.title}</span>
-                  </Button>
-                ))}
-              </div>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </div>
-      </div>
-
-      <div className={`mt-auto border-t flex-shrink-0 ${collapsed ? 'p-1' : 'p-2'}`}>
         <SidebarGroup>
+          <SidebarGroupLabel className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase">
+            User Management
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <div className={`flex items-center gap-3 rounded-lg hover:bg-muted transition-colors ${collapsed ? 'justify-center' : 'p-2'}`}>
-              <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                <User className="h-5 w-5 text-primary-foreground" />
-              </div>
-              {!collapsed && (
-                <>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">Admin User</p>
-                    <p className="text-xs text-muted-foreground truncate">admin@thermite.edu</p>
-                  </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </>
-              )}
+            <SidebarMenu className="space-y-1">
+              {userManagementItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild tooltip={collapsed ? item.title : undefined}>
+                    <NavLink
+                      to={item.url}
+                      className={`flex items-center p-3 rounded-lg transition-colors ${getNavClass(item.url)} ${collapsed ? 'justify-center' : ''}`}
+                    >
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      {!collapsed && (
+                        <div className="flex-1 ml-3 min-w-0">
+                          <span className="font-medium text-sm truncate">{item.title}</span>
+                        </div>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <Separator className="my-2 mx-2" />
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase">
+            Analytics & Reports
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu className="space-y-1">
+              {analyticsItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild tooltip={collapsed ? item.title : undefined}>
+                    <NavLink
+                      to={item.url}
+                      className={`flex items-center p-3 rounded-lg transition-colors ${getNavClass(item.url)} ${collapsed ? 'justify-center' : ''}`}
+                    >
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      {!collapsed && (
+                        <div className="flex-1 ml-3 min-w-0">
+                          <span className="font-medium text-sm truncate">{item.title}</span>
+                        </div>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <Separator className="my-2 mx-2" />
+        
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase">
+            Quick Actions
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <div className="grid grid-cols-2 gap-2 p-2 group-data-[collapsible=icon]:grid-cols-1">
+              {quickActions.map((action) => (
+                <Button
+                  key={action.title}
+                  variant="outline"
+                  size="sm"
+                  className="h-auto p-2 flex flex-col items-center gap-1 hover:bg-muted group-data-[collapsible=icon]:aspect-square group-data-[collapsible=icon]:p-1"
+                  title={collapsed ? action.title : undefined}
+                >
+                  <action.icon className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs font-normal group-data-[collapsible=icon]:hidden">{action.title}</span>
+                </Button>
+              ))}
             </div>
           </SidebarGroupContent>
         </SidebarGroup>
-      </div>
+      </SidebarContent>
 
+      <SidebarFooter className="border-t flex-shrink-0 p-2">
+        <div className={`flex items-center gap-3 rounded-lg hover:bg-muted transition-colors ${collapsed ? 'justify-center p-1' : 'p-2'}`}>
+          <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+            <User className="h-5 w-5 text-primary-foreground" />
+          </div>
+          {!collapsed && (
+            <>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">Admin User</p>
+                <p className="text-xs text-muted-foreground truncate">admin@thermite.edu</p>
+              </div>
+              <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </>
+          )}
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }

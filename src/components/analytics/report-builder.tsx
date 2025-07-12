@@ -62,6 +62,15 @@ const savedReports = [
   { id: 3, name: "Weekly Campaign Performance", date: "2024-07-22", schedule: "Weekly" },
 ];
 
+// Sample data for the Lead Generation Trends graph
+const leadGenerationData = [
+  { month: "Jan", leads: 120 },
+  { month: "Feb", leads: 150 },
+  { month: "Mar", leads: 180 },
+  { month: "Apr", leads: 210 },
+  { month: "May", leads: 250 },
+];
+
 export function ReportBuilder() {
   const [selectedMetrics, setSelectedMetrics] = useState<string[]>([]);
   const [reportName, setReportName] = useState("");
@@ -119,26 +128,45 @@ export function ReportBuilder() {
 
               <div>
                 <Label className="text-base font-medium">Select Metrics</Label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2 p-4 border rounded-lg">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2 p-4 border rounded-lg">
                   {availableMetrics.map(metric => (
-                    <div
-                      key={metric.id}
-                      className="flex items-center space-x-2"
-                    >
+                    <div key={metric.id} className="flex items-center space-x-2">
                       <Checkbox
                         id={metric.id}
                         checked={selectedMetrics.includes(metric.id)}
                         onCheckedChange={() => handleMetricToggle(metric.id)}
                       />
-                      <label
+                      <Label
                         htmlFor={metric.id}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-2"
+                        className="text-sm font-medium flex items-center gap-2 cursor-pointer"
                       >
                         <metric.icon className="h-4 w-4" />
                         {metric.name}
-                      </label>
+                      </Label>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Lead Generation Trends Graph */}
+              <div>
+                <Label className="text-base font-medium">Lead Generation Trends</Label>
+                <div className="mt-2 p-4 border rounded-lg overflow-hidden">
+                  <div className="w-full overflow-x-auto">
+                    <div className="flex flex-col min-w-full">
+                      <div className="flex justify-between items-end h-40 gap-4 pb-4">
+                        {leadGenerationData.map((data, index) => (
+                          <div key={index} className="flex flex-col items-center">
+                            <div 
+                              className="w-8 bg-primary rounded-t-md" 
+                              style={{ height: `${data.leads / 3}px` }}
+                            ></div>
+                            <span className="text-xs mt-1">{data.month}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
