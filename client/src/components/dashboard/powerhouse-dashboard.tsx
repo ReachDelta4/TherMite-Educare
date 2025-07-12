@@ -163,14 +163,44 @@ const automationIntelligence = {
   }
 };
 
-const competitiveAnalysis = [
-  { metric: "Course Quality", thermite: 9.2, competitor1: 7.8, competitor2: 8.1, industry: 7.5 },
-  { metric: "Pricing", thermite: 8.7, competitor1: 6.9, competitor2: 7.2, industry: 7.0 },
-  { metric: "Technology", thermite: 9.5, competitor1: 7.2, competitor2: 6.8, industry: 6.9 },
-  { metric: "Support", thermite: 9.1, competitor1: 8.0, competitor2: 7.5, industry: 7.3 },
-  { metric: "Placement", thermite: 8.9, competitor1: 7.6, competitor2: 8.2, industry: 7.7 },
-  { metric: "Innovation", thermite: 9.7, competitor1: 6.8, competitor2: 7.1, industry: 6.5 }
+// Monthly Revenue Breakdown Data
+const monthlyRevenueData = [
+  { month: "Jul 2024", medicalCoding: 1240000, medicalBilling: 890000, academics: 1350000, total: 3480000 },
+  { month: "Aug 2024", medicalCoding: 1380000, medicalBilling: 920000, academics: 1420000, total: 3720000 },
+  { month: "Sep 2024", medicalCoding: 1520000, medicalBilling: 1080000, academics: 1580000, total: 4180000 },
+  { month: "Oct 2024", medicalCoding: 1650000, medicalBilling: 1150000, academics: 1680000, total: 4480000 },
+  { month: "Nov 2024", medicalCoding: 1780000, medicalBilling: 1240000, academics: 1820000, total: 4840000 },
+  { month: "Dec 2024", medicalCoding: 1920000, medicalBilling: 1350000, academics: 1980000, total: 5250000 },
+  { month: "Jan 2025", medicalCoding: 2080000, medicalBilling: 1450000, academics: 2150000, total: 5680000 }
 ];
+
+// Business Funnel Analytics
+const businessFunnel = [
+  { name: "Website Visitors", value: 45670, fill: "#8884d8" },
+  { name: "Lead Generation", value: 8234, fill: "#82ca9d" },
+  { name: "Qualified Leads", value: 4567, fill: "#ffc658" },
+  { name: "Demo Requests", value: 2341, fill: "#ff7c7c" },
+  { name: "Proposals Sent", value: 1876, fill: "#8dd1e1" },
+  { name: "Enrollments", value: 1247, fill: "#d084d0" },
+  { name: "Active Students", value: 1089, fill: "#ffb347" },
+  { name: "Completions", value: 967, fill: "#87ceeb" }
+];
+
+// Summary Dashboard KPIs
+const summaryKPIs = {
+  totalRevenue: 24700000,
+  revenueGrowth: 34.2,
+  activeStudents: 3247,
+  studentGrowth: 28.7,
+  courseCompletions: 2890,
+  completionRate: 89.1,
+  customerSatisfaction: 4.8,
+  npsScore: 73,
+  leadConversion: 18.4,
+  avgDealSize: 28400,
+  monthlyRecurring: 890000,
+  churnRate: 2.1
+};
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658', '#FF7C7C'];
 
@@ -348,30 +378,29 @@ const ExecutiveOverview = () => {
         </Card>
       </div>
 
-      {/* Competitive Analysis Radar */}
+      {/* Business Conversion Funnel */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Shield className="h-5 w-5 mr-2" />
-            Competitive Intelligence Matrix
+            <Target className="h-5 w-5 mr-2" />
+            Business Conversion Funnel
           </CardTitle>
           <CardDescription>
-            Multi-dimensional competitive analysis across key business metrics
+            Complete customer journey from awareness to completion
           </CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={400}>
-            <RadarChart data={competitiveAnalysis}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey="metric" />
-              <PolarRadiusAxis angle={0} domain={[0, 10]} />
-              <Radar name="TherMite Educare" dataKey="thermite" stroke="#8884d8" fill="#8884d8" fillOpacity={0.3} strokeWidth={3} />
-              <Radar name="Competitor A" dataKey="competitor1" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.2} />
-              <Radar name="Competitor B" dataKey="competitor2" stroke="#ffc658" fill="#ffc658" fillOpacity={0.2} />
-              <Radar name="Industry Average" dataKey="industry" stroke="#ff7300" fill="#ff7300" fillOpacity={0.1} strokeDasharray="5 5" />
-              <Tooltip />
-              <Legend />
-            </RadarChart>
+            <FunnelChart>
+              <Tooltip formatter={(value, name) => [value.toLocaleString(), name]} />
+              <Funnel
+                dataKey="value"
+                data={businessFunnel}
+                isAnimationActive
+              >
+                <LabelList position="center" fill="#fff" stroke="none" fontSize={12} />
+              </Funnel>
+            </FunnelChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
@@ -403,6 +432,8 @@ export function PowerhouseDashboard() {
         return <PredictiveAnalytics />;
       case "realtime":
         return <RealtimeReports />;
+      case "summary":
+        return <SummaryReports />;
       default:
         return <ExecutiveOverview />;
     }
@@ -1023,5 +1054,242 @@ const RealtimeReports = () => (
         </CardContent>
       </Card>
     </div>
+  </div>
+);
+
+// Summary Reports Dashboard - Executive Summary
+const SummaryReports = () => (
+  <div className="space-y-6">
+    <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
+          Executive Summary Reports
+        </h1>
+        <p className="text-lg text-muted-foreground mt-2">
+          Comprehensive business overview with key performance indicators
+        </p>
+      </div>
+      <div className="flex items-center space-x-3">
+        <Button size="sm" variant="outline">
+          <Download className="h-4 w-4 mr-2" />
+          Export Report
+        </Button>
+      </div>
+    </div>
+
+    {/* Key Business Metrics Summary */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300">Total Revenue</CardTitle>
+          <IndianRupee className="h-4 w-4 text-green-600" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-green-800 dark:text-green-200">
+            ₹{(summaryKPIs.totalRevenue / 10000000).toFixed(1)}Cr
+          </div>
+          <p className="text-xs text-green-600 dark:text-green-400">
+            <span className="font-medium">+{summaryKPIs.revenueGrowth}%</span> from last period
+          </p>
+          <Progress value={summaryKPIs.revenueGrowth} className="mt-2 h-1" />
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-blue-200">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-300">Active Students</CardTitle>
+          <Users className="h-4 w-4 text-blue-600" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-blue-800 dark:text-blue-200">
+            {summaryKPIs.activeStudents.toLocaleString()}
+          </div>
+          <p className="text-xs text-blue-600 dark:text-blue-400">
+            <span className="font-medium">+{summaryKPIs.studentGrowth}%</span> growth rate
+          </p>
+          <Progress value={summaryKPIs.studentGrowth} className="mt-2 h-1" />
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 border-purple-200">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-purple-700 dark:text-purple-300">Completion Rate</CardTitle>
+          <GraduationCap className="h-4 w-4 text-purple-600" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-purple-800 dark:text-purple-200">
+            {summaryKPIs.completionRate}%
+          </div>
+          <p className="text-xs text-purple-600 dark:text-purple-400">
+            <span className="font-medium">{summaryKPIs.courseCompletions}</span> completions
+          </p>
+          <Progress value={summaryKPIs.completionRate} className="mt-2 h-1" />
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-orange-200">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-orange-700 dark:text-orange-300">Satisfaction Score</CardTitle>
+          <Star className="h-4 w-4 text-orange-600" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-orange-800 dark:text-orange-200">
+            {summaryKPIs.customerSatisfaction}/5
+          </div>
+          <p className="text-xs text-orange-600 dark:text-orange-400">
+            <span className="font-medium">NPS: {summaryKPIs.npsScore}</span> score
+          </p>
+          <Progress value={(summaryKPIs.customerSatisfaction / 5) * 100} className="mt-2 h-1" />
+        </CardContent>
+      </Card>
+    </div>
+
+    {/* Business Performance Overview */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Revenue Breakdown */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <BarChart3 className="h-5 w-5 mr-2" />
+            Revenue Stream Analysis
+          </CardTitle>
+          <CardDescription>
+            Monthly revenue breakdown by course category
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={monthlyRevenueData.slice(-6)}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip formatter={(value) => [`₹${(value as number / 100000).toFixed(1)}L`, ""]} />
+              <Legend />
+              <Area type="monotone" dataKey="medicalCoding" stackId="1" stroke="#8884d8" fill="#8884d8" name="Medical Coding" />
+              <Area type="monotone" dataKey="medicalBilling" stackId="1" stroke="#82ca9d" fill="#82ca9d" name="Medical Billing" />
+              <Area type="monotone" dataKey="academics" stackId="1" stroke="#ffc658" fill="#ffc658" name="Academic Coaching" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* Key Performance Indicators */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Target className="h-5 w-5 mr-2" />
+            Key Performance Indicators
+          </CardTitle>
+          <CardDescription>
+            Critical business metrics at a glance
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {[
+              { 
+                label: "Lead Conversion Rate", 
+                value: `${summaryKPIs.leadConversion}%`, 
+                target: "20%",
+                progress: (summaryKPIs.leadConversion / 20) * 100,
+                trend: "+4.2%"
+              },
+              { 
+                label: "Average Deal Size", 
+                value: `₹${(summaryKPIs.avgDealSize / 1000).toFixed(1)}K`, 
+                target: "₹30K",
+                progress: (summaryKPIs.avgDealSize / 30000) * 100,
+                trend: "+8.7%"
+              },
+              { 
+                label: "Monthly Recurring Revenue", 
+                value: `₹${(summaryKPIs.monthlyRecurring / 100000).toFixed(1)}L`, 
+                target: "₹10L",
+                progress: (summaryKPIs.monthlyRecurring / 1000000) * 100,
+                trend: "+15.3%"
+              },
+              { 
+                label: "Customer Churn Rate", 
+                value: `${summaryKPIs.churnRate}%`, 
+                target: "1.5%",
+                progress: 100 - ((summaryKPIs.churnRate / 1.5) * 100),
+                trend: "-0.8%"
+              }
+            ].map((kpi, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-sm">{kpi.label}</span>
+                  <div className="text-right">
+                    <span className="font-bold">{kpi.value}</span>
+                    <span className="text-xs text-muted-foreground ml-2">/ {kpi.target}</span>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Progress value={Math.min(kpi.progress, 100)} className="flex-1 h-2" />
+                  <Badge variant={kpi.trend.startsWith('+') ? 'default' : 'destructive'} className="text-xs">
+                    {kpi.trend}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+
+    {/* Business Insights Summary */}
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <Brain className="h-5 w-5 mr-2" />
+          Business Intelligence Summary
+        </CardTitle>
+        <CardDescription>
+          AI-powered insights and recommendations for business growth
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
+            <div className="flex items-center mb-2">
+              <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+              <span className="font-medium text-green-800 dark:text-green-200">Strengths</span>
+            </div>
+            <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
+              <li>• High student satisfaction (4.8/5)</li>
+              <li>• Strong revenue growth (+34.2%)</li>
+              <li>• Excellent completion rate (89.1%)</li>
+              <li>• Low churn rate (2.1%)</li>
+            </ul>
+          </div>
+
+          <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200">
+            <div className="flex items-center mb-2">
+              <AlertTriangle className="h-4 w-4 text-orange-600 mr-2" />
+              <span className="font-medium text-orange-800 dark:text-orange-200">Opportunities</span>
+            </div>
+            <ul className="text-sm text-orange-700 dark:text-orange-300 space-y-1">
+              <li>• Increase lead conversion rate</li>
+              <li>• Expand to new markets</li>
+              <li>• Enhance automation efficiency</li>
+              <li>• Optimize pricing strategy</li>
+            </ul>
+          </div>
+
+          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200">
+            <div className="flex items-center mb-2">
+              <Zap className="h-4 w-4 text-blue-600 mr-2" />
+              <span className="font-medium text-blue-800 dark:text-blue-200">Next Actions</span>
+            </div>
+            <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+              <li>• Implement advanced lead scoring</li>
+              <li>• Launch referral program</li>
+              <li>• Improve WhatsApp conversion</li>
+              <li>• Develop mobile app</li>
+            </ul>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   </div>
 );

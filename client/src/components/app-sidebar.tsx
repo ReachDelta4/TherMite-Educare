@@ -33,7 +33,8 @@ import {
   Clock,
   UserCog,
   Fingerprint,
-  LayoutDashboard
+  LayoutDashboard,
+  Target,
 } from "lucide-react";
 
 const navigationItems = [
@@ -82,13 +83,14 @@ const userManagementItems = [
 
 const dashboardItems = [
   { title: "Executive Overview", icon: BarChart3, url: "/dashboard" },
+  { title: "Summary Reports", icon: FileText, url: "/dashboard/summary" },
   { title: "Sales Intelligence", icon: LineChart, url: "/dashboard/sales" },
   { title: "Student Analytics", icon: Users, url: "/dashboard/students" },
   { title: "Revenue Analytics", icon: Download, url: "/dashboard/revenue" },
-  { title: "Marketing ROI", icon: FileText, url: "/dashboard/marketing" },
+  { title: "Marketing ROI", icon: Target, url: "/dashboard/marketing" },
   { title: "Operational KPIs", icon: Clock, url: "/dashboard/operations" },
   { title: "Predictive Analytics", icon: Fingerprint, url: "/dashboard/predictive" },
-  { title: "Real-time Reports", icon: BarChart3, url: "/dashboard/realtime" },
+  { title: "Real-time Reports", icon: Zap, url: "/dashboard/realtime" },
 ];
 
 export function AppSidebar() {
