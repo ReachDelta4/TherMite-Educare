@@ -1,0 +1,690 @@
+Please read the entire codebase, and understand all the metrics we should be tracking.
+
+These are the business details of the clients. Please analyse what metrics we might need to track so make it a Sales Force Level Sales Dashboard, also integrating with our WhatsApp Bot and AI Calling Assistant Reports.
+
+Skip to content
+
+Home
+About Us
+Courses
+Join As Teacher
+Blog
+Contact Us
+Know More
+
+
+ABOUT THERMITE EDUCARE
+Empowering Minds, Transforming Future
+
+
+
+Know About Us
+OUR COURSES
+Explore Our Diverse Course Offerings
+shape-29
+
+
+Medical Coding Course
+Empowering You to Excel in the World of Medical Coding
+
+Know More
+Medical Billing Course
+Empowering Your Journey to Excellence in Medical Billing
+
+Know More
+CBSE / ICSE / IB Coaching
+Ignite Your Academic Journey Join TherMite eduCare's CBSE, ICSE & IB Coaching, K1 to K12!
+
+Know More
+JEE / KCET / NEET Coaching
+Empowering You to Excel in JEE / KCET / NEET and Realize Your Dreams.
+
+Know More
+Why Choose TherMite eduCare?
+Expert Instructors
+Our experienced educators bring subject expertise to the virtual classroom, inspiring students to excel.
+
+Personalized Learning Journey
+Tailored paths accommodate individual strengths and pace, with continuous assessments and feedback for targeted growth.
+
+Cutting-Edge Technology
+Our online platform includes multimedia resources, live classes, and progress tracking for an engaging learning environment.
+
+0
+1
+2
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+0
+1
+2
+3
+,
+0
+8
+6
+4
+2
+0
+8
+6
+3
+1
+9
+7
+5
+3
+1
+9
+7
+5
+3
+1
+9
+7
+4
+2
+0
+8
+6
+4
+2
+0
+0
+3
+6
+9
+1
+4
+7
+0
+3
+6
+9
+2
+4
+7
+0
+3
+6
+9
+2
+5
+7
+0
+3
+6
+9
+2
+5
+8
+0
+3
+6
+9
+2
+5
+8
+1
+3
+6
+9
+2
+5
+8
+1
+4
+0
+0
+7
+3
+0
+6
+3
+9
+6
+2
+9
+6
+2
+9
+5
+2
+8
+5
+1
+8
+4
+1
+8
+4
+1
+7
+4
+0
+7
+3
+0
+7
+3
+0
+6
+3
+9
+6
+2
+9
+6
+2
+9
+5
+2
+8
+5
+1
+8
+4
+1
+8
+4
+1
+7
+4
+0
+7
+3
+0
+Students
+0
+1
+,
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+0
+1
+2
+3
+4
+5
+6
+7
+0
+6
+2
+8
+4
+0
+6
+2
+7
+3
+9
+5
+1
+7
+3
+9
+5
+1
+7
+3
+9
+5
+0
+6
+2
+8
+4
+0
+6
+2
+0
+0
+9
+9
+8
+8
+7
+7
+6
+6
+5
+5
+4
+4
+4
+3
+3
+2
+2
+1
+1
+0
+0
+9
+9
+9
+8
+8
+7
+7
+6
+6
+5
+5
+4
+4
+3
+3
+3
+2
+2
+1
+1
+0
+0
+Tutors
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+0
+3
+6
+0
+3
+6
+9
+2
+5
+9
+2
+5
+8
+1
+4
+8
+1
+4
+7
+0
+3
+7
+0
+3
+6
+9
+2
+6
+9
+2
+.
+0
+1
+3
+4
+5
+6
+8
+9
+0
+1
+3
+4
+5
+6
+8
+9
+0
+1
+3
+4
+5
+7
+8
+9
+0
+2
+3
+4
+5
+7
+8
+9
+0
+2
+3
+4
+6
+7
+8
+9
+1
+2
+3
+4
+5
+Students Success Rate
+
+0
+1
+2
+3
+,
+0
+1
+3
+4
+5
+6
+8
+9
+0
+1
+3
+4
+5
+7
+8
+9
+0
+2
+3
+4
+6
+7
+8
+9
+1
+2
+3
+4
+6
+7
+0
+9
+7
+6
+5
+3
+2
+1
+0
+8
+7
+6
+4
+3
+2
+0
+9
+8
+6
+5
+4
+2
+1
+0
+9
+7
+6
+5
+3
+2
+1
+9
+8
+7
+5
+4
+3
+2
+0
+9
+8
+6
+5
+4
+8
+0
+5
+0
+6
+1
+6
+1
+6
+1
+7
+2
+7
+2
+7
+2
+8
+3
+8
+3
+8
+3
+9
+4
+9
+4
+9
+4
+0
+5
+0
+5
+0
+6
+1
+6
+1
+6
+1
+7
+2
+7
+2
+7
+2
+8
+3
+8
+3
+8
+3
+9
+4
+9
+4
+9
+4
+0
+5
+0
+Hours Of Content
+Our Students Feedback
+Geeta Shree
+Medical Coder
+"Medical Coding Solutions transformed my career. Their comprehensive training and practical approach propelled me into a successful medical coding profession. I am grateful for their expertise and guidance in helping me achieve professional fulfillment."
+
+Vidya Singh
+Medical Coder
+Medical Coding Masters has been a game-changer for my professional growth. Their top-notch curriculum and expert instructors have equipped me with the skills and knowledge needed to excel in the field of medical coding. Thanks to their program, I've gained confidence and landed a rewarding job in the healthcare industry.
+
+Joshhitha-Nambiyar-Thermite
+Joshhitha Nambiyar
+Medical Coder
+“ I had a great experience with Thermite eduCares' medical coding course. The course materials were easy to understand, and the hands-on exercises boosted my confidence. Thanks to the course, I now have a fulfilling career in medical coding "
+
+Pavithra-Suresh-Thermite
+Pavithra Suresh
+Medical Coder
+“ The medical coding course at Thermite eduCares was exceptional. The comprehensive curriculum and supportive instructors helped me gain the necessary skills. The job placement support was excellent, and I secured a rewarding job right after completing the course. "
+
+Gopal-Krishnan-Thermite
+Gopal Krishnan
+Parent of a 9th-grade student
+“ Thermite Educare has been a game-changer for my child. The personalized attention and engaging online classes have sparked a love for learning like never before. Their confidence and grades have soared since joining. "
+
+Varsha-Kalarikal-Thermite
+Varsha Kalarikal
+A JEE Achiever
+I cannot thank Thermite Educare enough for their exceptional JEE preparation course. The comprehensive study materials and expert guidance have been invaluable. I cracked the exam and got admitted to my dream engineering college!
+
+Geeta Shree
+Medical Coder
+"Medical Coding Solutions transformed my career. Their comprehensive training and practical approach propelled me into a successful medical coding profession. I am grateful for their expertise and guidance in helping me achieve professional fulfillment."
+
+Vidya Singh
+Medical Coder
+Medical Coding Masters has been a game-changer for my professional growth. Their top-notch curriculum and expert instructors have equipped me with the skills and knowledge needed to excel in the field of medical coding. Thanks to their program, I've gained confidence and landed a rewarding job in the healthcare industry.
+
+Joshhitha-Nambiyar-Thermite
+Joshhitha Nambiyar
+Medical Coder
+“ I had a great experience with Thermite eduCares' medical coding course. The course materials were easy to understand, and the hands-on exercises boosted my confidence. Thanks to the course, I now have a fulfilling career in medical coding "
+
+Pavithra-Suresh-Thermite
+Pavithra Suresh
+Medical Coder
+“ The medical coding course at Thermite eduCares was exceptional. The comprehensive curriculum and supportive instructors helped me gain the necessary skills. The job placement support was excellent, and I secured a rewarding job right after completing the course. "
+
+Gopal-Krishnan-Thermite
+Gopal Krishnan
+Parent of a 9th-grade student
+“ Thermite Educare has been a game-changer for my child. The personalized attention and engaging online classes have sparked a love for learning like never before. Their confidence and grades have soared since joining. "
+
+Varsha-Kalarikal-Thermite
+Varsha Kalarikal
+A JEE Achiever
+I cannot thank Thermite Educare enough for their exceptional JEE preparation course. The comprehensive study materials and expert guidance have been invaluable. I cracked the exam and got admitted to my dream engineering college!
+
+Geeta Shree
+Medical Coder
+"Medical Coding Solutions transformed my career. Their comprehensive training and practical approach propelled me into a successful medical coding profession. I am grateful for their expertise and guidance in helping me achieve professional fulfillment."
+
+Vidya Singh
+Medical Coder
+Medical Coding Masters has been a game-changer for my professional growth. Their top-notch curriculum and expert instructors have equipped me with the skills and knowledge needed to excel in the field of medical coding. Thanks to their program, I've gained confidence and landed a rewarding job in the healthcare industry.
+
+Joshhitha-Nambiyar-Thermite
+Joshhitha Nambiyar
+Medical Coder
+“ I had a great experience with Thermite eduCares' medical coding course. The course materials were easy to understand, and the hands-on exercises boosted my confidence. Thanks to the course, I now have a fulfilling career in medical coding "
+
+12
+
+
+Empower Your Child's Success with TherMite eduCare's CBSE / ICSE / IB Coaching
+
+Start Learning Today
+
+
+Unlock Your Medical Coding Career with TherMite eduCare
+
+Start Learning Today
+Ace JEE and KCET Exams with Expert Coaching at TherMite eduCare
+
+Start Learning Today
+
+
+Succeed in NEET Exams with TherMite eduCare's Expert Coaching
+
+Start Learning Today
+Companies Where Our Students Are Working
+12
+11
+10
+
+
+
+
+
+Join TherMite eduCare for live online classes in K-12 education (CBSE, ICSE, IB, IGCSE, state boards) and specialized courses like Medical Coding. Founded in 2022, our top 12% teachers provide quality education anytime, anywhere.
+
+Quick Links
+Home
+About Us
+Contact Us
+Blogs
+Join As Teacher
+Our Courses
+Medical Coding Course
+Medical Billing Course
+NEET Coaching
+JEE Coaching
+KCET Coaching
+CBSE Coaching
+Contact Info
+TherMite eduCare, Garuda BHIVE Workspace, Kuvempu Nagar, Bengaluru, Karnataka 560069
+
++91 9606009652
+
+Official@thermiteeducare.com
+
+© 2023 By TherMite eduCare. All Rights Reserved
+1
+Hello 👋
+Can we help you?
+→
+Contact Us
+Contact Form
+Name
+ 
+Phone*
+ 
+Email*
+ 
+Message
+ 
+Facebook
+Instagram
+Linkedin
+YouTube
+Twitter
+
+
+--------
+
+
+Please understand the business and propose the changes we can make to make the Dashboard the best.
+
+Currently, the Dashboard, Advanced Analytics, are all scattered and show nonsense metrics there.
+
+We need to do actual useful enterprise salesforce level dashboard, that are beautiful and attractive and provide Critical Data.
