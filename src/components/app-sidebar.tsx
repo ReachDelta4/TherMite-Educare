@@ -101,23 +101,21 @@ export function AppSidebar() {
 
   const getNavClass = (path: string) => {
     return isActive(path) 
-      ? `bg-primary text-primary-foreground shadow-md font-semibold ${!collapsed ? 'border-l-4 border-primary-foreground' : ''}` 
+      ? `bg-accent text-accent-foreground shadow-md font-semibold ${!collapsed ? 'border-l-4 border-accent-foreground' : ''}` 
       : "hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground transition-all duration-200";
   };
 
   return (
     <Sidebar className="transition-all duration-300 ease-in-out border-r bg-background flex flex-col h-full overflow-hidden" collapsible="icon">
-      <SidebarHeader className="border-b p-4 flex-shrink-0">
+      <SidebarHeader className="border-b p-4 flex-shrink-0 bg-gradient-purple">
         <div className={`flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
-          <div className="p-2 bg-primary rounded-lg shadow-md">
-            <Zap className="h-6 w-6 text-primary-foreground" />
-          </div>
+          <img src="/logo.png" alt="TherMite Logo" className="h-10 w-auto" />
           {!collapsed && (
             <div className="flex flex-col">
-              <h2 className="font-bold text-lg text-foreground">
+              <h2 className="font-bold text-lg text-white">
                 TherMite
               </h2>
-              <p className="text-xs text-muted-foreground">Educare Platform</p>
+              <p className="text-xs text-white/80">Educare Platform</p>
             </div>
           )}
         </div>

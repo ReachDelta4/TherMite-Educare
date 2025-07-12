@@ -59,12 +59,12 @@ const IndexContent = () => {
           onClick={toggleSidebar}
           size="icon"
           variant="outline"
-          className="h-8 w-8 rounded-full bg-background border-2 shadow-lg hover:border-primary/50 transition-all hover:scale-110"
+          className="h-8 w-8 rounded-full bg-background border-2 shadow-lg hover:border-accent/50 transition-all hover:scale-110"
         >
           {collapsed ? (
-            <ChevronRight className="h-4 w-4 text-primary" />
+            <ChevronRight className="h-4 w-4 text-accent" />
           ) : (
-            <ChevronLeft className="h-4 w-4 text-primary" />
+            <ChevronLeft className="h-4 w-4 text-accent" />
           )}
         </Button>
       </div>
@@ -79,6 +79,7 @@ const IndexContent = () => {
               <p className="text-sm text-muted-foreground truncate">{getPageDescription()}</p>
             </div>
           </div>
+          <div className="ml-auto h-1 w-24 bg-gradient-purple rounded-full opacity-70"></div>
         </header>
 
         {/* Main Content */}

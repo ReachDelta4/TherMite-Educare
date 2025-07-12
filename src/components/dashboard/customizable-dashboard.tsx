@@ -409,21 +409,25 @@ export function CustomizableDashboard() {
   ];
 
   const renderMetricCard = (metric: MetricCard) => (
-    <Card key={metric.title} className="hover:shadow-md transition-shadow">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-2">
-          <metric.icon className="h-5 w-5 text-primary" />
-          <Badge variant={metric.changeType === "positive" ? "default" : metric.changeType === "negative" ? "destructive" : "secondary"} className="text-xs">
-            {metric.change}
-          </Badge>
+    <Card key={metric.title} className="overflow-hidden">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>
+          <div className={`p-1 rounded-md ${metric.title.includes("WhatsApp") || metric.title.includes("Certificate") ? "bg-accent/10" : "bg-primary/10"}`}>
+            <metric.icon className={`h-4 w-4 ${metric.title.includes("WhatsApp") || metric.title.includes("Certificate") ? "text-accent" : "text-primary"}`} />
+          </div>
         </div>
-        <div className="space-y-1">
-          <h3 className="text-2xl font-bold">{metric.value}</h3>
-          <p className="text-sm font-medium text-foreground">{metric.title}</p>
-          {metric.description && (
-            <p className="text-xs text-muted-foreground">{metric.description}</p>
-          )}
-        </div>
+        <CardDescription>{metric.description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{metric.value}</div>
+        <p className={`text-xs ${
+          metric.changeType === "positive" ? "text-success" : 
+          metric.changeType === "negative" ? "text-destructive" : 
+          "text-muted-foreground"
+        }`}>
+          {metric.change}
+        </p>
       </CardContent>
     </Card>
   );
@@ -436,41 +440,44 @@ export function CustomizableDashboard() {
     description?: string,
     children?: React.ReactNode
   ) => {
-    const Icon = icon;
+    const isOpen = openSections[sectionKey];
+    
     return (
-      <Collapsible open={openSections[sectionKey]} onOpenChange={() => toggleSection(sectionKey)}>
+      <Collapsible
+        open={isOpen}
+        onOpenChange={() => toggleSection(sectionKey)}
+        className="mb-6 border rounded-lg overflow-hidden"
+      >
         <CollapsibleTrigger asChild>
-          <Card className="cursor-pointer hover:shadow-md transition-all">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <Icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">{title}</CardTitle>
-                    {description && <CardDescription>{description}</CardDescription>}
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Badge variant="outline" className="text-xs">
-                    {metrics.length} metrics
-                  </Badge>
-                  {openSections[sectionKey] ? (
-                    <ChevronDown className="h-4 w-4" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4" />
-                  )}
-                </div>
+          <div className={`flex items-center justify-between p-4 cursor-pointer ${sectionKey === "whatsapp" || sectionKey === "certificates" ? "bg-gradient-purple bg-opacity-10" : ""}`}>
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-md ${sectionKey === "whatsapp" || sectionKey === "certificates" ? "bg-accent/20" : "bg-primary/20"}`}>
+                {React.createElement(icon, { 
+                  className: `h-5 w-5 ${sectionKey === "whatsapp" || sectionKey === "certificates" ? "text-accent" : "text-primary"}` 
+                })}
               </div>
-            </CardHeader>
-          </Card>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-4 mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {metrics.map(renderMetricCard)}
+              <div>
+                <h3 className="font-semibold">{title}</h3>
+                {description && <p className="text-sm text-muted-foreground">{description}</p>}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {isOpen ? (
+                <ChevronDown className="h-5 w-5 text-muted-foreground" />
+              ) : (
+                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              )}
+            </div>
           </div>
-          {children}
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="p-4 pt-0">
+            {children ? children : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
+                {metrics.map(renderMetricCard)}
+              </div>
+            )}
+          </div>
         </CollapsibleContent>
       </Collapsible>
     );
