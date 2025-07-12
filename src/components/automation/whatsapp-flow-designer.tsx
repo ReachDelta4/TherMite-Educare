@@ -1,638 +1,798 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import { Canvas as FabricCanvas, Circle, Rect, FabricText, Line, Group } from "fabric";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState, useCallback, Fragment, useEffect, useMemo } from 'react';
+import ReactFlow, {
+  ReactFlowProvider,
+  addEdge,
+  useNodesState,
+  useEdgesState,
+  Controls,
+  Background,
+  MiniMap,
+  Connection,
+  Edge,
+  Node,
+  Handle,
+  Position,
+  getSmoothStepPath,
+  EdgeProps,
+  useReactFlow,
+} from 'reactflow';
+import 'reactflow/dist/style.css';
 import { 
   MessageSquare, 
   Bot, 
   Trash2, 
   Save, 
-  Plus, 
-  Settings,
   Play,
   Zap,
   Eye,
-  Download,
-  Link2
+    GitBranch,
+    MousePointer2,
+    Clock,
+    List,
+    Workflow
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogFooter, 
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-interface FlowNode {
+
+// --- NEW, ROBUST VISUAL FLOW FORM BUILDER ---
+
+interface FlowComponent {
   id: string;
-  type: "trigger" | "message" | "ai-response" | "condition" | "action" | "delay";
+  type: 'TextHeading' | 'TextBody' | 'Footer' | 'TextInput';
+  text?: string;
+  label?: string;
+  name?: string; // For TextInput
+}
+
+interface FlowScreen {
+  id:string;
   title: string;
-  description: string;
-  config: Record<string, any>;
-  position: { x: number; y: number };
-  connections: string[];
+  layout: {
+    type: 'SingleColumnLayout';
+    children: FlowComponent[];
+  };
 }
 
-interface Connection {
-  from: string;
-  to: string;
+const FORM_COMPONENTS_CONFIG = {
+  'TextHeading': { name: 'Heading', icon: () => <strong>H1</strong>, defaultProps: { text: 'New Heading' } },
+  'TextBody': { name: 'Body Text', icon: () => <p>Abc</p>, defaultProps: { text: 'Some body text.' } },
+  'TextInput': { name: 'Text Input', icon: () => <Input className="h-8" readOnly />, defaultProps: { label: 'Input Label', name: 'input_name' } },
+  'Footer': { name: 'Footer Button', icon: () => <Button size="sm" variant="outline">Btn</Button>, defaultProps: { label: 'Complete' } },
+};
+
+const FlowFormBuilder = ({ initialJson, onSave, onClose }: { initialJson: string, onSave: (newJson: string) => void, onClose: () => void }) => {
+    const [screens, setScreens] = useState<FlowScreen[]>([]);
+    const [activeScreenId, setActiveScreenId] = useState<string | null>(null);
+    const [selectedComponentId, setSelectedComponentId] = useState<string | null>(null);
+
+  useEffect(() => {
+        try {
+            const flow = JSON.parse(initialJson);
+            if (flow && Array.isArray(flow.screens)) {
+                setScreens(flow.screens);
+                if (flow.screens.length > 0 && !activeScreenId) {
+                    setActiveScreenId(flow.screens[0].id);
+                }
+            } else {
+                 throw new Error("Invalid flow structure");
+            }
+        } catch (e) {
+            toast.error("Invalid Flow JSON. Starting fresh.");
+            const freshScreen = { id: `screen-${Date.now()}`, title: "Welcome Screen", layout: { type: 'SingleColumnLayout', children: [] } };
+            setScreens([freshScreen]);
+            setActiveScreenId(freshScreen.id);
+        }
+    }, [initialJson]);
+    
+    const activeScreen = screens.find(s => s.id === activeScreenId);
+    const selectedComponent = activeScreen?.layout.children.find(c => c.id === selectedComponentId);
+
+    const handleSave = () => {
+        const flowToSave = { version: "3.1", screens: screens };
+        onSave(JSON.stringify(flowToSave, null, 2));
+    };
+    
+    const addComponent = (type: FlowComponent['type']) => {
+        if (!activeScreen) return;
+        const config = FORM_COMPONENTS_CONFIG[type];
+        const newComponent: FlowComponent = { id: `${type.toLowerCase()}-${Date.now()}`, type, ...config.defaultProps };
+        const updatedScreens = screens.map(s => {
+            if (s.id === activeScreenId) {
+                return { ...s, layout: { ...s.layout, children: [...s.layout.children, newComponent] } };
+            }
+            return s;
+        });
+        setScreens(updatedScreens);
+    };
+
+    const updateComponent = (componentId: string, newProps: Partial<FlowComponent>) => {
+        if (!activeScreen) return;
+        setScreens(screens.map(s => 
+            s.id === activeScreenId ? {
+                ...s,
+                layout: {
+                    ...s.layout,
+                    children: s.layout.children.map(c => 
+                        c.id === componentId ? { ...c, ...newProps } : c
+                    ),
+                },
+            } : s
+        ));
+    };
+
+    const deleteComponent = (componentId: string) => {
+        if (!activeScreen) return;
+        setScreens(screens.map(s => 
+            s.id === activeScreenId ? {
+                ...s,
+                layout: { ...s.layout, children: s.layout.children.filter(c => c.id !== componentId) }
+            } : s
+        ));
+        setSelectedComponentId(null);
+    };
+
+    const ScreenManager = () => (
+        <div className="w-64 border-r p-4 space-y-2 bg-white flex flex-col">
+            <h3 className="font-semibold text-lg">Screens</h3>
+            <ScrollArea className="flex-grow">
+                {screens.map(screen => (
+                    <div key={screen.id} onClick={() => setActiveScreenId(screen.id)}
+                        className={cn('p-2 rounded cursor-pointer text-sm', activeScreenId === screen.id ? 'bg-blue-100 font-semibold' : 'hover:bg-gray-100')}>
+                        {screen.title || 'Untitled'}
+                    </div>
+                ))}
+            </ScrollArea>
+        </div>
+    );
+
+    const VisualCanvas = () => (
+        <div className="flex-1 p-8 bg-gray-100 flex justify-center items-center">
+            {activeScreen && (
+                 <div className="w-[340px] h-[600px] bg-white rounded-2xl shadow-lg mx-auto p-4 border flex flex-col">
+                    <h2 className="text-center font-bold pb-2">{activeScreen.title}</h2>
+                    <ScrollArea className="flex-grow p-2 border-dashed border-2 rounded-lg">
+                        {activeScreen.layout.children.length === 0 && <p className="text-center text-gray-400">Add elements from the right panel.</p>}
+                        {activeScreen.layout.children.map(comp => {
+                            const isSelected = selectedComponentId === comp.id;
+                            return (
+                                <div key={comp.id} onClick={() => setSelectedComponentId(comp.id)} className={cn("p-2 border rounded cursor-pointer my-2", isSelected ? 'border-blue-500 border-2 shadow-lg' : 'hover:bg-gray-50')}>
+                                    {comp.type === 'TextHeading' && <h2 className="text-xl font-bold">{comp.text}</h2>}
+                                    {comp.type === 'TextBody' && <p>{comp.text}</p>}
+                                    {comp.type === 'TextInput' && <div><Label>{comp.label}</Label><Input readOnly placeholder="User input goes here" /></div>}
+                                    {comp.type === 'Footer' && <Button className="w-full" disabled>{comp.label}</Button>}
+                                </div>
+                            )
+                        })}
+                    </ScrollArea>
+                </div>
+            )}
+        </div>
+    );
+
+    const PropertiesPanel = () => (
+        <div className="w-72 border-l p-4 space-y-4 bg-white">
+            <h3 className="font-semibold text-lg">Add Elements</h3>
+            <div className="grid grid-cols-2 gap-2">
+                {Object.entries(FORM_COMPONENTS_CONFIG).map(([type, { name, icon }]) => (
+                     <div key={type} onClick={() => addComponent(type as any)} className="p-2 border rounded hover:bg-gray-100 cursor-pointer flex flex-col items-center justify-center text-center h-20">
+                        <div className="h-8 w-8 flex items-center justify-center">{icon()}</div>
+                        <p className="text-xs mt-1">{name}</p>
+                    </div>
+                ))}
+            </div>
+            <Separator/>
+            <h3 className="font-semibold text-lg">Properties</h3>
+            {selectedComponent ? (
+                <div className="space-y-4">
+                    <p className="font-semibold text-sm text-gray-600 border-b pb-2">{FORM_COMPONENTS_CONFIG[selectedComponent.type].name}</p>
+                    {Object.keys(selectedComponent).filter(k => k !== 'id' && k !== 'type').map(key => (
+                        <div key={key}>
+                            <Label className="capitalize text-xs">{key.replace('_', ' ')}</Label>
+                            <Textarea value={(selectedComponent as any)[key]} onChange={e => updateComponent(selectedComponent.id, { [key]: e.target.value })} className="text-sm" />
+                        </div>
+                    ))}
+                    <Button variant="destructive" size="sm" className="w-full !mt-6" onClick={() => deleteComponent(selectedComponent.id)}>Delete Element</Button>
+                </div>
+            ) : <p className="text-sm text-gray-500">Select an element to configure it.</p>}
+        </div>
+    );
+    
+    return (
+        <div className="flex flex-col h-full w-full bg-gray-50 text-gray-900">
+            <div className="flex flex-grow min-h-0">
+                <ScreenManager />
+                <VisualCanvas />
+                <PropertiesPanel />
+            </div>
+            <div className="p-4 border-t bg-white shadow-inner flex justify-end gap-2">
+                 <Button variant="outline" onClick={onClose}>Cancel</Button>
+                 <Button onClick={handleSave}>Save and Close</Button>
+            </div>
+        </div>
+    );
+};
+
+
+// --- REACT FLOW SETUP & CUSTOM NODES ---
+
+function CustomEdge({
+    id,
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+    sourcePosition,
+    targetPosition,
+    style = {},
+    markerEnd,
+    selected,
+}: EdgeProps) {
+    const { setEdges } = useReactFlow();
+    const [edgePath, labelX, labelY] = getSmoothStepPath({
+        sourceX,
+        sourceY,
+        sourcePosition,
+        targetX,
+        targetY,
+        targetPosition,
+    });
+
+    const onEdgeDelete = (evt: React.MouseEvent) => {
+        evt.stopPropagation();
+        setEdges((eds) => eds.filter((edge) => edge.id !== id));
+        toast.info("Connection deleted.");
+    };
+
+    return (
+        <>
+            {/* Invisible path for easier selection. Increased stroke width. */}
+            <path
+                id={`${id}-interaction`}
+                d={edgePath}
+                className="react-flow__edge-path"
+                style={{ stroke: 'transparent', strokeWidth: 30 }}
+            />
+            {/* Visible path. */}
+            <path
+                id={id}
+                style={style}
+                className="react-flow__edge-path"
+                d={edgePath}
+                markerEnd={markerEnd}
+            />
+            {selected && (
+                <foreignObject
+                    width={32}
+                    height={32}
+                    x={labelX - 16}
+                    y={labelY - 16}
+                    className="cursor-pointer"
+                    // Ensures the icon is clickable
+                    style={{ pointerEvents: 'all' }}
+                >
+                    <div 
+                        className="bg-white border-2 border-gray-500 rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-100"
+                        onClick={onEdgeDelete}
+                    >
+                        <Trash2 className="h-5 w-5 text-red-500" />
+                    </div>
+                </foreignObject>
+            )}
+        </>
+    );
 }
 
-export function WhatsAppFlowDesigner() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
-  const [nodes, setNodes] = useState<FlowNode[]>([
-    {
-      id: "trigger-1",
-      type: "trigger",
-      title: "WhatsApp Message Received",
-      description: "Triggers when a new message is received",
-      config: {},
-      position: { x: 50, y: 100 },
-      connections: []
-    }
-  ]);
-  const [connections, setConnections] = useState<Connection[]>([]);
-  const [selectedNode, setSelectedNode] = useState<FlowNode | null>(null);
-  const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [connectionStart, setConnectionStart] = useState<string | null>(null);
+const triggerNodeComponent = (props: any) => <CustomNode {...props} type="trigger" />;
+const messageNodeComponent = (props: any) => <CustomNode {...props} type="message" />;
+const interactiveListNodeComponent = (props: any) => <CustomNode {...props} type="interactiveList" />;
+const interactiveFlowNodeComponent = (props: any) => <CustomNode {...props} type="interactiveFlow" />;
+const aiResponseNodeComponent = (props: any) => <CustomNode {...props} type="ai-response" />;
+const conditionNodeComponent = (props: any) => <CustomNode {...props} type="condition" />;
+const delayNodeComponent = (props: any) => <CustomNode {...props} type="delay" />;
+const actionNodeComponent = (props: any) => <CustomNode {...props} type="action" />;
 
-  const nodeTypes = [
-    { 
-      id: "message", 
-      name: "Send Message", 
-      icon: MessageSquare, 
-      color: "#3b82f6",
-      description: "Send a text message to the user"
-    },
-    { 
-      id: "ai-response", 
-      name: "AI Response", 
-      icon: Bot, 
-      color: "#8b5cf6",
-      description: "Generate AI-powered response"
-    },
-    { 
-      id: "condition", 
-      name: "Condition", 
-      icon: Zap, 
-      color: "#eab308",
-      description: "Create conditional logic paths"
-    },
-    { 
-      id: "action", 
-      name: "Action", 
-      icon: Settings, 
-      color: "#10b981",
-      description: "Perform an action or webhook"
-    },
-    { 
-      id: "delay", 
-      name: "Delay", 
-      icon: Play, 
-      color: "#f97316",
-      description: "Add a time delay"
-    }
-  ];
 
-  useEffect(() => {
-    if (!canvasRef.current) return;
+const initialNodes: Node[] = [
+  { id: '1', type: 'trigger', position: { x: 50, y: 150 }, data: { label: 'Campaign Start' } },
+  { id: '2', type: 'message', position: { x: 350, y: 50 }, data: { label: 'Welcome Message', text: 'Hello! Welcome to our service.' } },
+  { id: '3', type: 'interactiveList', position: { x: 350, y: 200 }, data: { label: 'Show Options', buttonText: 'Choose', sections: [{id: `section-${Date.now()}`, title: 'Services', rows: [{id: 's1', title: 'Buy Product'}, {id: 's2', title: 'View Docs'}] }] }},
+  { id: '4', type: 'interactiveFlow', position: { x: 350, y: 350 }, data: { label: 'Collect Feedback', flowId: 'feedback_flow_v1', flow_json: '{"version":"3.1","screens":[{"id":"WELCOME_SCREEN","layout":{"type":"SingleColumnLayout","children":[{"type":"TextHeading","text":"Hello World"}]}}]}' } },
+];
 
-    const canvas = new FabricCanvas(canvasRef.current, {
-      width: 1200,
-      height: 700,
-      backgroundColor: "#f8fafc",
-      selection: false, // Disable multi-selection
-    });
+const initialEdges: Edge[] = [
+    { id: 'e1-2', source: '1', target: '2', animated: true, type: 'smoothstep' },
+    { id: 'e1-3', source: '1', target: '3', animated: true, type: 'smoothstep' },
+    { id: 'e1-4', source: '1', target: '4', animated: true, type: 'smoothstep' },
+];
 
-    // Prevent text selection and context menu
-    canvas.wrapperEl.style.userSelect = 'none';
-    canvas.wrapperEl.style.webkitUserSelect = 'none';
-    canvas.wrapperEl.addEventListener('contextmenu', e => e.preventDefault());
-    canvas.wrapperEl.addEventListener('selectstart', e => e.preventDefault());
+const nodeConfig = [
+  { id: "trigger", name: "Trigger", icon: Play, color: "text-green-500", defaultData: { label: 'Trigger' } },
+  { id: "message", name: "Send Message", icon: MessageSquare, color: "text-blue-500", defaultData: { label: 'Send Message', text: 'Your message here...' } },
+  { id: "interactiveList", name: "List Message", icon: List, color: "text-green-500", defaultData: { label: 'List Message', buttonText: 'Options', sections: [{id: `section-${Date.now()}`, title: 'Section 1', rows: [{id: `row-${Date.now()}`, title: 'Option 1'}]}] }},
+  { id: "interactiveFlow", name: "Interactive Flow", icon: Workflow, color: "text-teal-500", defaultData: { label: 'Interactive Flow', flowId: 'YOUR_FLOW_ID_HERE', flow_json: '{\n  "version": "3.1",\n  "screens": [\n    {\n      "id": "WELCOME_SCREEN",\n      "layout": {\n        "type": "SingleColumnLayout",\n        "children": [\n          {\n            "type": "TextHeading",\n            "text": "Hello World"\n          }\n        ]\n      }\n    }\n  ]\n}' }},
+  { id: "ai-response", name: "AI Response", icon: Bot, color: "text-purple-500", defaultData: { label: 'AI Response', prompt: 'Analyze user response...' } },
+  { id: "condition", name: "Condition", icon: GitBranch, color: "text-yellow-500", defaultData: { label: 'Condition', variable: 'user.tag', operator: 'equals', value: 'lead' } },
+  { id: "delay", name: "Delay", icon: Clock, color: "text-indigo-500", defaultData: { label: 'Delay', duration: '1', unit: 'hour' } },
+  { id: "action", name: "Action", icon: Zap, color: "text-orange-500", defaultData: { label: 'Action', webhookUrl: 'https://example.com/hook' } },
+];
 
-    setFabricCanvas(canvas);
-    renderFlow(canvas);
+const CustomNode = ({ data, type }: { data: any, type: string }) => {
+    const config = nodeConfig.find(n => n.id === type);
+    if (!config) return null;
 
-    // Handle node selection and connection logic
-    canvas.on('mouse:down', (options) => {
-      if (options.target && (options.target as any).nodeId) {
-        const nodeId = (options.target as any).nodeId;
-        const node = nodes.find(n => n.id === nodeId);
-        if (node) {
-          setSelectedNode(node);
-        }
-      }
-
-      // Handle connection point clicks
-      if (options.target && (options.target as any).isConnectionPoint) {
-        const nodeId = (options.target as any).nodeId;
-        if (isConnecting && connectionStart && connectionStart !== nodeId) {
-          // Complete connection
-          connectNodes(connectionStart, nodeId);
-          setIsConnecting(false);
-          setConnectionStart(null);
-        } else {
-          // Start connection
-          setIsConnecting(true);
-          setConnectionStart(nodeId);
-          toast("Click on another node's connection point to connect");
-        }
-      }
-    });
-
-    // Handle object movement
-    canvas.on('object:moving', (e) => {
-      const target = e.target;
-      if (target && (target as any).nodeId) {
-        const nodeId = (target as any).nodeId;
-        const node = nodes.find(n => n.id === nodeId);
-        if (node) {
-          // Update node position
-          setNodes(prev => prev.map(n => 
-            n.id === nodeId 
-              ? { ...n, position: { x: target.left || 0, y: target.top || 0 } }
-              : n
-          ));
-        }
-      }
-    });
-
-    // Handle double-click to open config
-    canvas.on('mouse:dblclick', (options) => {
-      if (options.target && (options.target as any).nodeId) {
-        setIsConfigOpen(true);
-      }
-    });
-
-    return () => {
-      canvas.dispose();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (fabricCanvas) {
-      renderFlow(fabricCanvas);
-    }
-  }, [nodes, connections]);
-
-  const renderFlow = (canvas: FabricCanvas) => {
-    canvas.clear();
-    
-    // Add subtle grid background
-    addGridBackground(canvas);
-    
-    // Render connections first (so they appear behind nodes)
-    connections.forEach(connection => {
-      const fromNode = nodes.find(n => n.id === connection.from);
-      const toNode = nodes.find(n => n.id === connection.to);
-      
-      if (fromNode && toNode) {
-        renderConnection(canvas, fromNode, toNode);
-      }
-    });
-    
-    // Render nodes
-    nodes.forEach(node => {
-      renderNode(canvas, node);
-    });
-    
-    canvas.renderAll();
-  };
-
-  const addGridBackground = (canvas: FabricCanvas) => {
-    const gridSize = 25;
-    const canvasWidth = canvas.width || 1200;
-    const canvasHeight = canvas.height || 700;
-
-    for (let i = 0; i <= canvasWidth; i += gridSize) {
-      const line = new Line([i, 0, i, canvasHeight], {
-        stroke: '#e2e8f0',
-        strokeWidth: 1,
-        selectable: false,
-        evented: false,
-      });
-      canvas.add(line);
-    }
-
-    for (let i = 0; i <= canvasHeight; i += gridSize) {
-      const line = new Line([0, i, canvasWidth, i], {
-        stroke: '#e2e8f0',
-        strokeWidth: 1,
-        selectable: false,
-        evented: false,
-      });
-      canvas.add(line);
-    }
-  };
-
-  const renderNode = (canvas: FabricCanvas, node: FlowNode) => {
-    const nodeType = nodeTypes.find(t => t.id === node.type) || nodeTypes[0];
-    const isSelected = selectedNode?.id === node.id;
-    
-    // Node background
-    const nodeRect = new Rect({
-      left: 0,
-      top: 0,
-      width: 280,
-      height: 100,
-      fill: '#ffffff',
-      stroke: isSelected ? '#3b82f6' : '#e2e8f0',
-      strokeWidth: isSelected ? 2 : 1,
-      rx: 12,
-      ry: 12
-    });
-
-    // Icon background
-    const iconBg = new Circle({
-      left: 20,
-      top: 30,
-      radius: 16,
-      fill: nodeType.color,
-    });
-
-    // Node title
-    const titleText = new FabricText(node.title, {
-      left: 60,
-      top: 20,
-      fontSize: 14,
-      fill: '#1e293b',
-      fontWeight: '600',
-      fontFamily: 'Inter, system-ui, sans-serif',
-      selectable: false,
-      evented: false
-    });
-
-    // Node description
-    const descText = new FabricText(node.description, {
-      left: 60,
-      top: 40,
-      fontSize: 12,
-      fill: '#64748b',
-      fontFamily: 'Inter, system-ui, sans-serif',
-      selectable: false,
-      evented: false
-    });
-
-    // Output connection point
-    const outputPoint = new Circle({
-      left: 260,
-      top: 45,
-      radius: 8,
-      fill: isConnecting && connectionStart === node.id ? '#10b981' : '#e2e8f0',
-      stroke: '#94a3b8',
-      strokeWidth: 2,
-      selectable: false,
-    });
-
-    (outputPoint as any).isConnectionPoint = true;
-    (outputPoint as any).nodeId = node.id;
-
-    // Input connection point
-    const inputPoint = new Circle({
-      left: 10,
-      top: 45,
-      radius: 8,
-      fill: '#e2e8f0',
-      stroke: '#94a3b8',
-      strokeWidth: 2,
-      selectable: false,
-    });
-
-    (inputPoint as any).isConnectionPoint = true;
-    (inputPoint as any).nodeId = node.id;
-
-    const group = new Group([nodeRect, iconBg, titleText, descText], {
-      left: node.position.x,
-      top: node.position.y,
-      selectable: true,
-      hasControls: false,
-      hasBorders: false,
-    });
-
-    (group as any).nodeId = node.id;
-
-    canvas.add(group);
-    
-    // Add connection points separately so they can be clicked
-    outputPoint.set({
-      left: node.position.x + 270,
-      top: node.position.y + 45
-    });
-    inputPoint.set({
-      left: node.position.x + 10,
-      top: node.position.y + 45
-    });
-    
-    canvas.add(outputPoint);
-    if (node.type !== 'trigger') { // Triggers don't need input points
-      canvas.add(inputPoint);
-    }
-  };
-
-  const renderConnection = (canvas: FabricCanvas, fromNode: FlowNode, toNode: FlowNode) => {
-    const startX = fromNode.position.x + 280;
-    const startY = fromNode.position.y + 50;
-    const endX = toNode.position.x + 10;
-    const endY = toNode.position.y + 50;
-
-    // Simple straight line for now
-    const connectionLine = new Line([startX, startY, endX, endY], {
-      stroke: '#94a3b8',
-      strokeWidth: 2,
-      selectable: false,
-      evented: false,
-    });
-
-    canvas.add(connectionLine);
-
-    // Add arrow head
-    const angle = Math.atan2(endY - startY, endX - startX);
-    const arrowLength = 10;
-    const arrowAngle = Math.PI / 6;
-
-    const arrowX1 = endX - arrowLength * Math.cos(angle - arrowAngle);
-    const arrowY1 = endY - arrowLength * Math.sin(angle - arrowAngle);
-    const arrowX2 = endX - arrowLength * Math.cos(angle + arrowAngle);
-    const arrowY2 = endY - arrowLength * Math.sin(angle + arrowAngle);
-
-    const arrowHead1 = new Line([endX, endY, arrowX1, arrowY1], {
-      stroke: '#94a3b8',
-      strokeWidth: 2,
-      selectable: false,
-      evented: false,
-    });
-
-    const arrowHead2 = new Line([endX, endY, arrowX2, arrowY2], {
-      stroke: '#94a3b8',
-      strokeWidth: 2,
-      selectable: false,
-      evented: false,
-    });
-
-    canvas.add(arrowHead1);
-    canvas.add(arrowHead2);
-  };
-
-  const addNode = (type: string) => {
-    const nodeType = nodeTypes.find(t => t.id === type);
-    if (!nodeType) return;
-
-    const newNode: FlowNode = {
-      id: `${type}-${Date.now()}`,
-      type: type as FlowNode['type'],
-      title: nodeType.name,
-      description: nodeType.description,
-      config: {},
-      position: { 
-        x: 100 + nodes.length * 50, 
-        y: 150 + (nodes.length % 3) * 120 
-      },
-      connections: []
+    const handleStyle = {
+        width: 14,
+        height: 14,
     };
 
-    setNodes(prev => [...prev, newNode]);
-    toast(`${nodeType.name} added to flow`);
-  };
+    return (
+        <div className="p-3 border-2 border-stone-400 rounded-lg bg-white shadow-md w-60 relative">
+            <Handle type="target" position={Position.Left} className="!bg-teal-500" style={handleStyle} />
+            <div className="flex items-center gap-2 mb-2">
+                <config.icon className={cn("h-5 w-5", config.color)} />
+                <strong className="text-sm">{data.label}</strong>
+            </div>
+            <div className="text-xs text-gray-500 pr-6">
+                {type === 'message' && <p>Text: {data.text?.substring(0, 30)}...</p>}
+                {type === 'interactiveList' && <p>Button: {data.buttonText}</p>}
+                {type === 'interactiveFlow' && <p>Flow ID: {data.flowId}</p>}
+                {type === 'condition' && <p className="font-mono bg-gray-100 p-1 rounded mt-1 text-center">{`${data.variable || ''} ${data.operator || ''} ${data.value || ''}`.trim()}</p>}
+            </div>
 
-  const deleteNode = (nodeId: string) => {
-    setNodes(prev => prev.filter(n => n.id !== nodeId));
-    setConnections(prev => prev.filter(c => c.from !== nodeId && c.to !== nodeId));
-    if (selectedNode?.id === nodeId) {
-      setSelectedNode(null);
-    }
-    toast("Node deleted");
-  };
+            {type === 'condition' ? (
+                <>
+                    <div className="absolute text-xs text-gray-500 font-medium" style={{ top: '33%', right: -28, transform: 'translateY(-50%)' }}>
+                        Then
+                    </div>
+                    <Handle
+                        type="source"
+                        position={Position.Right}
+                        id="then"
+                        style={{ ...handleStyle, top: '33%' }}
+                        className="!bg-green-500"
+                    />
 
-  const connectNodes = (fromId: string, toId: string) => {
-    // Check if connection already exists
-    const exists = connections.some(c => c.from === fromId && c.to === toId);
-    if (exists) {
-      toast("Nodes are already connected");
-      return;
-    }
+                    <div className="absolute text-xs text-gray-500 font-medium" style={{ top: '66%', right: -24, transform: 'translateY(-50%)' }}>
+                        Else
+                    </div>
+                    <Handle
+                        type="source"
+                        position={Position.Right}
+                        id="else"
+                        style={{ ...handleStyle, top: '66%' }}
+                        className="!bg-red-500"
+                    />
+                </>
+            ) : (
+                <Handle type="source" position={Position.Right} className="!bg-teal-500" style={handleStyle} />
+            )}
+        </div>
+    );
+};
 
-    const newConnection: Connection = { from: fromId, to: toId };
-    setConnections(prev => [...prev, newConnection]);
-    toast("Nodes connected successfully!");
-  };
 
-  const saveFlow = () => {
-    const flowData = { nodes, connections };
-    localStorage.setItem('whatsapp-flow', JSON.stringify(flowData));
-    toast("Flow saved successfully!");
-  };
+// --- HELPER COMPONENTS ---
 
-  const loadFlow = () => {
-    const saved = localStorage.getItem('whatsapp-flow');
-    if (saved) {
-      const flowData = JSON.parse(saved);
-      setNodes(flowData.nodes || []);
-      setConnections(flowData.connections || []);
-      toast("Flow loaded successfully!");
-    }
-  };
+const Header = ({ onSave, onPublish }: { onSave: () => void; onPublish: () => void; }) => (
+    <header className="flex items-center justify-between h-16 px-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-10 select-none">
+        <div className="flex items-center gap-4">
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">WhatsApp Campaign Builder</h1>
+            <Badge variant="outline">Draft</Badge>
+        </div>
+        <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={onSave}><Save className="h-4 w-4 mr-2" />Save Draft</Button>
+            <Button size="sm" onClick={onPublish}><Play className="h-4 w-4 mr-2" />Publish Campaign</Button>
+        </div>
+    </header>
+);
 
-  const clearConnecting = () => {
-    setIsConnecting(false);
-    setConnectionStart(null);
-    toast("Connection cancelled");
-  };
+const NodePalette = ({ onDragStart }: { onDragStart: (e: React.DragEvent, nodeType: string) => void }) => (
+  <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4 select-none">
+    <h2 className="text-lg font-semibold mb-4">Nodes</h2>
+    <div className="space-y-2">
+      {nodeConfig.map((nodeType) => (
+        <div
+          key={nodeType.id}
+          className="flex items-center p-2 border rounded-lg cursor-grab bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
+          draggable
+          onDragStart={(e) => onDragStart(e, nodeType.id)}
+        >
+          <nodeType.icon className={cn("h-6 w-6 mr-3", nodeType.color)} />
+          <p className="font-semibold">{nodeType.name}</p>
+        </div>
+      ))}
+    </div>
+  </aside>
+);
 
+const ConfigPanel = ({ selectedNode, onUpdateNode, onDeleteNode }: { selectedNode: Node | null; onUpdateNode: (id: string, data: any) => void; onDeleteNode: (id: string) => void }) => {
+
+    const handleDataChange = (key: string, value: any) => {
+        if (selectedNode) {
+            onUpdateNode(selectedNode.id, { ...selectedNode.data, [key]: value });
+        }
+    };
+
+    const handleSectionChange = (sectionIndex: number, key: string, value: string) => {
+        if (selectedNode && selectedNode.data.sections) {
+            const newSections = [...selectedNode.data.sections];
+            newSections[sectionIndex] = { ...newSections[sectionIndex], [key]: value };
+            handleDataChange('sections', newSections);
+        }
+    };
+
+    const handleRowChange = (sectionIndex: number, rowIndex: number, key: string, value: string) => {
+        if (selectedNode && selectedNode.data.sections) {
+            const newSections = [...selectedNode.data.sections];
+            newSections[sectionIndex].rows[rowIndex] = { ...newSections[sectionIndex].rows[rowIndex], [key]: value };
+            handleDataChange('sections', newSections);
+        }
+    };
+
+    const addSection = () => {
+        if (selectedNode && selectedNode.data.sections) {
+            const newSections = [...selectedNode.data.sections, {id: `section-${Date.now()}`, title: 'New Section', rows: []}];
+            handleDataChange('sections', newSections);
+        }
+    };
+
+    const addRow = (sectionIndex: number) => {
+        if (selectedNode && selectedNode.data.sections) {
+            const newSections = [...selectedNode.data.sections];
+            newSections[sectionIndex].rows.push({id: `row-${Date.now()}`, title: 'New Option'});
+            handleDataChange('sections', newSections);
+        }
+    };
+
+    const removeSection = (sectionIndex: number) => {
+        if (selectedNode && selectedNode.data.sections) {
+            const newSections = selectedNode.data.sections.filter((_: any, i: number) => i !== sectionIndex);
+            handleDataChange('sections', newSections);
+        }
+    };
+
+    const removeRow = (sectionIndex: number, rowIndex: number) => {
+        if (selectedNode && selectedNode.data.sections) {
+            const newSections = [...selectedNode.data.sections];
+            newSections[sectionIndex].rows = newSections[sectionIndex].rows.filter((_: any, i: number) => i !== rowIndex);
+            handleDataChange('sections', newSections);
+        }
+    };
+
+    const renderInteractiveListConfig = () => {
+        if (!selectedNode) return null;
   return (
-    <div className="space-y-4 select-none">
-      {/* Header */}
-      <Card className="border-0 bg-gradient-subtle">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-primary/10 rounded-lg">
-                <Zap className="h-6 w-6 text-primary" />
+            <>
+                <div className="space-y-2">
+                    <Label htmlFor="config-label">Label</Label>
+                    <Input id="config-label" value={selectedNode.data.label} onChange={(e) => handleDataChange('label', e.target.value)} />
               </div>
-              <div>
-                <CardTitle className="text-xl">WhatsApp Flow Designer</CardTitle>
-                <p className="text-sm text-muted-foreground">Build intelligent conversation flows</p>
+                <div className="space-y-2">
+                    <Label htmlFor="config-buttonText">Button Text</Label>
+                    <Input id="config-buttonText" value={selectedNode.data.buttonText} onChange={(e) => handleDataChange('buttonText', e.target.value)} />
               </div>
+                <Separator />
+                <h3 className="text-md font-semibold">Sections</h3>
+                {selectedNode.data.sections?.map((section: any, sectionIndex: number) => (
+                    <div key={section.id} className="p-2 border rounded space-y-2">
+                         <div className="flex items-center justify-between">
+                            <Label>Section Title</Label>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeSection(sectionIndex)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
             </div>
-            <div className="flex items-center space-x-2">
-              <Badge variant="default" className="px-3 py-1">
-                {nodes.length} Nodes
-              </Badge>
-              <Badge variant="secondary" className="px-3 py-1">
-                {connections.length} Connections
-              </Badge>
-              {isConnecting && (
-                <Badge variant="destructive" className="px-3 py-1 cursor-pointer" onClick={clearConnecting}>
-                  <Link2 className="h-3 w-3 mr-1" />
-                  Connecting... (Click to cancel)
-                </Badge>
-              )}
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
+                        <Input value={section.title} onChange={(e) => handleSectionChange(sectionIndex, 'title', e.target.value)} />
 
-      {/* main content and dialogs */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-1 space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Steps
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {nodeTypes.map((nodeType) => (
-                <Button
-                  key={nodeType.id}
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start h-auto p-3"
-                  onClick={() => addNode(nodeType.id)}
-                >
-                  <div className="flex items-start space-x-3">
-                    <div className="p-2 rounded-lg" style={{ backgroundColor: nodeType.color + '20' }}>
-                      <nodeType.icon className="h-4 w-4" style={{ color: nodeType.color }} />
+                        {section.rows?.map((row: any, rowIndex: number) => (
+                            <div key={row.id} className="flex items-center gap-2 pl-4">
+                                <Input value={row.title} onChange={(e) => handleRowChange(sectionIndex, rowIndex, 'title', e.target.value)} />
+                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeRow(sectionIndex, rowIndex)}><Trash2 className="h-4 w-4" /></Button>
                     </div>
-                    <div className="text-left">
-                      <div className="font-medium text-sm">{nodeType.name}</div>
-                      <div className="text-xs text-muted-foreground">{nodeType.description}</div>
+                        ))}
+                        <Button variant="outline" size="sm" onClick={() => addRow(sectionIndex)}>+ Add Option</Button>
                     </div>
-                  </div>
-                </Button>
-              ))}
-            </CardContent>
-          </Card>
+                ))}
+                <Button variant="secondary" className="w-full" onClick={addSection}>+ Add Section</Button>
+            </>
+        );
+    }
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button variant="outline" size="sm" className="w-full" onClick={saveFlow}>
-                <Save className="h-4 w-4 mr-2" />
-                Save Flow
-              </Button>
-              <Button variant="outline" size="sm" className="w-full" onClick={loadFlow}>
-                <Download className="h-4 w-4 mr-2" />
-                Load Flow
-              </Button>
-              <Button variant="outline" size="sm" className="w-full">
-                <Play className="h-4 w-4 mr-2" />
-                Test Flow
-              </Button>
-              <Button variant="outline" size="sm" className="w-full">
-                <Eye className="h-4 w-4 mr-2" />
-                Preview
-              </Button>
-            </CardContent>
-          </Card>
+    const renderConditionConfig = () => {
+        if (!selectedNode) return null;
 
-          {isConnecting && (
-            <Card className="border-orange-200 bg-orange-50">
-              <CardContent className="p-4">
-                <div className="text-sm text-orange-700">
-                  <strong>Connection Mode:</strong> Click on another node's connection point to create a link.
+        const operators = [
+            { value: 'equals', label: 'Equals' },
+            { value: 'not_equals', label: 'Not Equals' },
+            { value: 'contains', label: 'Contains' },
+            { value: 'not_contains', label: 'Does Not Contain' },
+            { value: 'starts_with', label: 'Starts With' },
+            { value: 'ends_with', label: 'Ends With' },
+        ];
+
+        return (
+            <>
+                <div className="space-y-2">
+                    <Label htmlFor="config-label">Label</Label>
+                    <Input id="config-label" value={selectedNode.data.label} onChange={(e) => handleDataChange('label', e.target.value)} />
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full mt-2" 
-                  onClick={clearConnecting}
-                >
-                  Cancel Connection
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-
-        <div className="lg:col-span-4">
-          <Card>
-            <CardContent className="p-0">
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-lg overflow-hidden border-2 border-dashed border-border">
-                <canvas 
-                  ref={canvasRef} 
-                  className="w-full cursor-pointer" 
-                  style={{ 
-                    userSelect: 'none', 
-                    WebkitUserSelect: 'none',
-                    MozUserSelect: 'none',
-                    msUserSelect: 'none'
-                  }} 
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      <Dialog open={isConfigOpen} onOpenChange={setIsConfigOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Configure Step</DialogTitle>
-          </DialogHeader>
-          {selectedNode && (
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3 p-4 bg-muted/50 rounded-lg">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <MessageSquare className="h-5 w-5 text-primary" />
+                <Separator />
+                <h3 className="text-md font-semibold">Criteria</h3>
+                <div className="space-y-2">
+                    <Label htmlFor="config-variable">Variable</Label>
+                    <Input id="config-variable" value={selectedNode.data.variable} onChange={(e) => handleDataChange('variable', e.target.value)} placeholder="e.g., user.tag or last_message.text"/>
                 </div>
-                <div>
-                  <h3 className="font-semibold">{selectedNode.title}</h3>
-                  <p className="text-sm text-muted-foreground">{selectedNode.description}</p>
+                <div className="space-y-2">
+                    <Label htmlFor="config-operator">Operator</Label>
+                    <Select value={selectedNode.data.operator} onValueChange={(value) => handleDataChange('operator', value)}>
+                        <SelectTrigger id="config-operator">
+                            <SelectValue placeholder="Select operator" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {operators.map(op => (
+                                <SelectItem key={op.value} value={op.value}>{op.label}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
-              </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <Label>Step Name</Label>
-                  <Input 
-                    value={selectedNode.title} 
-                    onChange={(e) => {
-                      const newTitle = e.target.value;
-                      setSelectedNode(prev => prev ? {...prev, title: newTitle} : null);
-                      setNodes(prev => prev.map(n => 
-                        n.id === selectedNode.id ? {...n, title: newTitle} : n
-                      ));
-                    }}
+                <div className="space-y-2">
+                    <Label htmlFor="config-value">Value</Label>
+                    <Input id="config-value" value={selectedNode.data.value} onChange={(e) => handleDataChange('value', e.target.value)} />
+                </div>
+            </>
+        );
+    };
+
+    const renderInteractiveFlowConfig = () => {
+        if (!selectedNode) return null;
+        
+        const [isBuilderOpen, setIsBuilderOpen] = useState(false);
+
+        const handleSave = (newJson: string) => {
+            handleDataChange('flow_json', newJson);
+            setIsBuilderOpen(false); // Close dialog on save
+        };
+
+        return (
+            <>
+                <div className="space-y-2">
+                    <Label htmlFor="config-label">Label</Label>
+                    <Input id="config-label" value={selectedNode.data.label} onChange={(e) => handleDataChange('label', e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="config-flowId">Flow ID</Label>
+                    <Input id="config-flowId" value={selectedNode.data.flowId} onChange={(e) => handleDataChange('flowId', e.target.value)} />
+                </div>
+                <Dialog open={isBuilderOpen} onOpenChange={setIsBuilderOpen}>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" className="w-full">Design Flow</Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-6xl h-[90vh] flex flex-col p-0">
+                         <DialogHeader className="p-4 border-b">
+                            <DialogTitle>Interactive Flow Builder</DialogTitle>
+                            <DialogDescription>
+                                Visually build the screens for your interactive flow. Changes are saved when you click "Save and Close".
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex-grow min-h-0">
+                           <FlowFormBuilder 
+                                initialJson={selectedNode.data.flow_json}
+                                onSave={handleSave}
+                                onClose={() => setIsBuilderOpen(false)}
+                            />
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            </>
+        );
+    }
+
+    const renderDefaultConfig = () => {
+        if (!selectedNode) return null;
+        return Object.entries(selectedNode.data).map(([key, value]) => (
+            <div key={key}>
+              <Label htmlFor={`config-${key}`}>{key}</Label>
+              <Textarea
+                id={`config-${key}`}
+                value={typeof value === 'object' ? JSON.stringify(value, null, 2) : value}
+                onChange={(e) => {
+                    if (key === 'flow_json') {
+                        // Just update the string, don't try to parse it here
+                        handleDataChange(key, e.target.value);
+                    } else {
+                        handleDataChange(key, e.target.value);
+                    }
+                }}
+                rows={key === 'text' || key === 'flow_json' ? 4 : 1}
                   />
                 </div>
-                <div>
-                  <Label>Description</Label>
-                  <Textarea 
-                    value={selectedNode.description}
-                    onChange={(e) => {
-                      const newDesc = e.target.value;
-                      setSelectedNode(prev => prev ? {...prev, description: newDesc} : null);
-                      setNodes(prev => prev.map(n => 
-                        n.id === selectedNode.id ? {...n, description: newDesc} : n
-                      ));
-                    }}
-                  />
-                </div>
-              </div>
+        ));
+    };
 
-              <div className="flex justify-between pt-4 border-t">
-                <Button 
-                  variant="destructive" 
-                  onClick={() => {
-                    deleteNode(selectedNode.id);
-                    setIsConfigOpen(false);
-                  }}
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Step
-                </Button>
-                <Button onClick={() => setIsConfigOpen(false)}>
-                  Save Changes
-                </Button>
+    return (
+        <aside className="w-80 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 p-4">
+            <h2 className="text-lg font-semibold mb-4">Configuration</h2>
+            {selectedNode ? (
+            <ScrollArea className="h-full">
+                <div className="space-y-4 p-1">
+                    {selectedNode.type === 'interactiveList' && renderInteractiveListConfig()}
+                    {selectedNode.type === 'interactiveFlow' && renderInteractiveFlowConfig()}
+                    {selectedNode.type === 'condition' && renderConditionConfig()}
+                    {selectedNode.type !== 'interactiveList' && selectedNode.type !== 'interactiveFlow' && selectedNode.type !== 'condition' && renderDefaultConfig()}
+                    <Separator className="!my-6" />
+                    <Button variant="outline" size="sm" className="w-full" onClick={() => onDeleteNode(selectedNode.id)}>
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Node
+                    </Button>
+                </div>
+            </ScrollArea>
+            ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
+                <MousePointer2 className="h-10 w-10 mb-2" />
+                <p>Select a node to configure.</p>
               </div>
+            )}
+        </aside>
+    );
+};
+
+
+// --- MAIN COMPONENT ---
+
+const FlowBuilder = () => {
+    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+    const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
+
+    const onConnect = useCallback((params: Edge | Connection) => setEdges((eds) => addEdge({ ...params, type: 'smoothstep', animated: true }, eds)), [setEdges]);
+
+    const onDragOver = useCallback((event: React.DragEvent) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+    }, []);
+
+    const nodeTypes = useMemo(() => ({
+        trigger: triggerNodeComponent,
+        message: messageNodeComponent,
+        interactiveList: interactiveListNodeComponent,
+        interactiveFlow: interactiveFlowNodeComponent,
+        'ai-response': aiResponseNodeComponent,
+        condition: conditionNodeComponent,
+        delay: delayNodeComponent,
+        action: actionNodeComponent,
+    }), []);
+
+    const edgeTypes = useMemo(() => ({
+        smoothstep: CustomEdge,
+    }), []);
+
+    const onDrop = useCallback((event: React.DragEvent) => {
+        event.preventDefault();
+
+        const type = event.dataTransfer.getData('application/reactflow');
+        if (typeof type === 'undefined' || !type || !reactFlowInstance) {
+            return;
+        }
+
+        const position = reactFlowInstance.screenToFlowPosition({
+            x: event.clientX,
+            y: event.clientY,
+        });
+
+        const config = nodeConfig.find(n => n.id === type);
+        if (!config) return;
+
+        const newNode: Node = {
+            id: `${type}-${Date.now()}`,
+            type,
+            position,
+            data: { ...config.defaultData },
+        };
+
+        setNodes((nds) => nds.concat(newNode));
+    }, [reactFlowInstance, setNodes]);
+
+    const onDragStart = (event: React.DragEvent, nodeType: string) => {
+        event.dataTransfer.setData('application/reactflow', nodeType);
+        event.dataTransfer.effectAllowed = 'move';
+    };
+
+    const updateNodeConfig = (nodeId: string, data: any) => {
+        setNodes((nds) =>
+            nds.map((node) =>
+                node.id === nodeId ? { ...node, data: { ...node.data, ...data } } : node
+            )
+        );
+        if (selectedNode?.id === nodeId) {
+            setSelectedNode(prev => prev ? {...prev, data: {...prev.data, ...data}} : null)
+        }
+    };
+
+    const deleteNode = (nodeId: string) => {
+        setNodes((nds) => nds.filter((node) => node.id !== nodeId));
+        setEdges((eds) => eds.filter((edge) => edge.source !== nodeId && edge.target !== nodeId));
+        setSelectedNode(null);
+    };
+
+    const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
+        setSelectedNode(node);
+    }, []);
+
+    const onPaneClick = useCallback(() => setSelectedNode(null), []);
+
+    const onSave = useCallback(() => {
+        if (reactFlowInstance) {
+            const flow = reactFlowInstance.toObject();
+            localStorage.setItem('whatsapp-flow', JSON.stringify(flow));
+            toast.success("Flow saved successfully!");
+        }
+    }, [reactFlowInstance]);
+
+    const onPublish = () => {
+        toast.info("Publish functionality not implemented yet.");
+    };
+
+    return (
+        <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900 font-sans">
+            <Header onSave={onSave} onPublish={onPublish} />
+            <div className="flex flex-1 overflow-hidden">
+                <NodePalette onDragStart={onDragStart} />
+                <main className="flex-1 select-none" onDrop={onDrop} onDragOver={onDragOver}>
+                    <ReactFlow
+                        nodes={nodes}
+                        edges={edges}
+                        onNodesChange={onNodesChange}
+                        onEdgesChange={onEdgesChange}
+                        onConnect={onConnect}
+                        onNodeClick={onNodeClick}
+                        onPaneClick={onPaneClick}
+                        onInit={setReactFlowInstance}
+                        nodeTypes={nodeTypes}
+                        edgeTypes={edgeTypes}
+                        fitView
+                        connectionRadius={30}
+                        panOnDrag
+                    >
+                        <Controls />
+                        <MiniMap nodeColor={(node) => {
+                            switch (node.type) {
+                                case 'trigger': return '#22c55e';
+                                case 'message': return '#3b82f6';
+                                case 'interactiveList': return '#10b981';
+                                case 'interactiveFlow': return '#14b8a6';
+                                default: return '#6b7280';
+                            }
+                        }}/>
+                        <Background gap={16} size={1} variant="dots" />
+                    </ReactFlow>
+                </main>
+                <ConfigPanel selectedNode={selectedNode} onUpdateNode={updateNodeConfig} onDeleteNode={deleteNode} />
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
-}
+};
+
+
+export function WhatsAppCampaignFlowBuilder() {
+    return (
+        <ReactFlowProvider>
+            <FlowBuilder />
+        </ReactFlowProvider>
+  );
+} 

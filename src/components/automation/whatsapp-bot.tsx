@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { MessageSquare, Settings, Activity, PenTool, Eye } from "lucide-react";
 import { useState } from "react";
-import { WhatsAppFlowDesigner } from "./whatsapp-flow-designer";
+import { WhatsAppCampaignFlowBuilder } from "./whatsapp-flow-designer";
 import { WhatsAppTemplateManager } from "./whatsapp-template-manager";
 import { WhatsAppCampaignCreator } from "./whatsapp-campaign-creator";
 
@@ -58,7 +58,7 @@ export function WhatsAppBot() {
         </div>
 
         {activeTab === "campaigns" && <WhatsAppCampaignCreator />}
-        {activeTab === "flow" && <WhatsAppFlowDesigner />}
+        {activeTab === "flow" && <WhatsAppCampaignFlowBuilder />}
         {activeTab === "templates" && <WhatsAppTemplateManager />}
       </CardContent>
     </Card>

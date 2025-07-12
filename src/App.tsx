@@ -10,10 +10,11 @@ import NotFound from "./pages/NotFound";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { CustomizableDashboard } from "@/components/dashboard/customizable-dashboard";
-import { WhatsAppCampaignCreator } from "@/components/automation/whatsapp-campaign-creator";
+import { WhatsAppBot } from "@/components/automation/whatsapp-bot";
 import { CertificateGenerator } from "@/components/automation/certificate-generator";
 import { AICallingAgent } from "@/components/automation/ai-calling-agent";
 import { CustomDashboard } from "@/components/automation/custom-dashboard";
+import { CertificateBuilderPage } from "./pages/CertificateBuilderPage";
 
 const App: React.FC = () => {
   const [queryClient] = useState(() => new QueryClient({
@@ -34,11 +35,13 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Index />}>
               <Route index element={<CustomizableDashboard />} />
-              <Route path="whatsapp" element={<WhatsAppCampaignCreator />} />
+              <Route path="whatsapp" element={<WhatsAppBot />} />
               <Route path="certificates" element={<CertificateGenerator />} />
               <Route path="ai-calling" element={<AICallingAgent />} />
               <Route path="analytics" element={<CustomDashboard />} />
             </Route>
+            <Route path="/certificate-builder" element={<CertificateBuilderPage />} />
+            <Route path="/certificate-builder/:templateId" element={<CertificateBuilderPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
