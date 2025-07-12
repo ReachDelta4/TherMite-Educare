@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { FullPageLoader } from "./components/ui/loader";
+import { Helmet } from "react-helmet";
 
 const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -36,6 +37,11 @@ const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <Helmet>
+          <title>TherMite Educare OS Demo</title>
+          <link rel="icon" href="/logo.png" type="image/png" />
+          <meta name="description" content="TherMite Educare Operating System - Centralized Management Platform" />
+        </Helmet>
         <Toaster />
         <Sonner />
         <BrowserRouter>
