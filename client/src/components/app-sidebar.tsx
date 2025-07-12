@@ -86,10 +86,7 @@ const dashboardItems = [
   { title: "Summary Reports", icon: FileText, url: "/dashboard/summary" },
   { title: "Sales Intelligence", icon: LineChart, url: "/dashboard/sales" },
   { title: "Student Analytics", icon: Users, url: "/dashboard/students" },
-  { title: "Revenue Analytics", icon: Download, url: "/dashboard/revenue" },
   { title: "Marketing ROI", icon: Target, url: "/dashboard/marketing" },
-  { title: "Operational KPIs", icon: Clock, url: "/dashboard/operations" },
-  { title: "Predictive Analytics", icon: Fingerprint, url: "/dashboard/predictive" },
   { title: "Real-time Reports", icon: Zap, url: "/dashboard/realtime" },
 ];
 

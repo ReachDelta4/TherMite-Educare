@@ -422,14 +422,8 @@ export function PowerhouseDashboard() {
         return <SalesIntelligence />;
       case "students":
         return <StudentAnalytics />;
-      case "revenue":
-        return <RevenueAnalytics />;
       case "marketing":
         return <MarketingROI />;
-      case "operations":
-        return <OperationalKPIs />;
-      case "predictive":
-        return <PredictiveAnalytics />;
       case "realtime":
         return <RealtimeReports />;
       case "summary":
@@ -455,8 +449,18 @@ const SalesIntelligence = () => (
           Sales Intelligence Hub
         </h1>
         <p className="text-lg text-muted-foreground mt-2">
-          Advanced sales analytics with AI-powered insights and lead scoring
+          Advanced sales analytics with AI-powered insights, revenue intelligence and predictive analytics
         </p>
+      </div>
+      <div className="flex items-center space-x-3">
+        <Button size="sm" variant="outline">
+          <Download className="h-4 w-4 mr-2" />
+          Export Sales Report
+        </Button>
+        <Button size="sm" variant="default">
+          <Mail className="h-4 w-4 mr-2" />
+          Email Report
+        </Button>
       </div>
     </div>
 
@@ -582,150 +586,7 @@ const SalesIntelligence = () => (
   </div>
 );
 
-// Student Analytics Dashboard
-const StudentAnalytics = () => (
-  <div className="space-y-6">
-    <div className="flex items-center justify-between">
-      <div>
-        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-          Student Success Analytics
-        </h1>
-        <p className="text-lg text-muted-foreground mt-2">
-          Comprehensive student lifecycle and performance intelligence
-        </p>
-      </div>
-    </div>
 
-    {/* Student Metrics Grid */}
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Active Students</CardTitle>
-          <Users className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">3,247</div>
-          <p className="text-xs text-muted-foreground">
-            <span className="text-green-500">+234</span> this month
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
-          <GraduationCap className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">87.3%</div>
-          <p className="text-xs text-muted-foreground">
-            <span className="text-green-500">+2.1%</span> improvement
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Avg Progress</CardTitle>
-          <Activity className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">72.8%</div>
-          <p className="text-xs text-muted-foreground">
-            <span className="text-green-500">+5.3%</span> faster
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Satisfaction</CardTitle>
-          <Star className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">4.7/5</div>
-          <p className="text-xs text-muted-foreground">
-            <span className="text-green-500">+0.2</span> increase
-          </p>
-        </CardContent>
-      </Card>
-    </div>
-
-    {/* Course Performance Matrix */}
-    <Card>
-      <CardHeader>
-        <CardTitle>Course Performance Matrix</CardTitle>
-        <CardDescription>Multi-dimensional analysis of course effectiveness and student outcomes</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={400}>
-          <ComposedChart data={coursePerformanceMatrix}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="course" />
-            <YAxis yAxisId="left" />
-            <YAxis yAxisId="right" orientation="right" />
-            <Tooltip />
-            <Legend />
-            <Bar yAxisId="left" dataKey="enrolled" fill="#8884d8" name="Enrolled" />
-            <Bar yAxisId="left" dataKey="completed" fill="#82ca9d" name="Completed" />
-            <Line yAxisId="right" type="monotone" dataKey="satisfaction" stroke="#ff7300" strokeWidth={3} name="Satisfaction" />
-            <Line yAxisId="right" type="monotone" dataKey="placementRate" stroke="#8dd1e1" strokeWidth={2} name="Placement %" />
-          </ComposedChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
-
-    {/* Geographic Distribution */}
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Geographic Student Distribution</CardTitle>
-          <CardDescription>Regional performance and growth analysis</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={geoAnalytics}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="state" angle={-45} textAnchor="end" height={80} />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="students" fill="#8884d8" name="Students" />
-              <Bar dataKey="growth" fill="#82ca9d" name="Growth %" />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Student Journey Insights</CardTitle>
-          <CardDescription>Behavioral patterns and engagement metrics</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[
-              { metric: "Average Study Time", value: "4.2 hrs/day", trend: "+12%" },
-              { metric: "Assignment Completion", value: "94.3%", trend: "+8%" },
-              { metric: "Forum Participation", value: "76.8%", trend: "+15%" },
-              { metric: "Peer Interaction", value: "68.9%", trend: "+22%" },
-              { metric: "Mentor Sessions", value: "3.4/month", trend: "+18%" },
-              { metric: "Resource Usage", value: "87.2%", trend: "+9%" }
-            ].map((item, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                <span className="font-medium">{item.metric}</span>
-                <div className="text-right">
-                  <div className="font-bold">{item.value}</div>
-                  <div className="text-sm text-green-500">{item.trend}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  </div>
-);
 
 // Revenue Analytics Dashboard
 const RevenueAnalytics = () => (
@@ -829,6 +690,685 @@ const MarketingROI = () => (
             </div>
             <div className="flex justify-between">
               <span>Conversion Rate</span>
+              <span className="font-bold">{automationIntelligence.aiCalling.conversionRate}%</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Avg Call Duration</span>
+              <span className="font-bold">{automationIntelligence.aiCalling.avgCallDuration} min</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Award className="h-5 w-5 mr-2" />
+            Certificate Automation
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span>Certificates Generated</span>
+              <span className="font-bold">{automationIntelligence.certificates.generated.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Process Time</span>
+              <span className="font-bold">{automationIntelligence.certificates.avgProcessTime}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Error Rate</span>
+              <span className="font-bold">{automationIntelligence.certificates.errorRate}%</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Cost Savings</span>
+              <span className="font-bold">₹{(automationIntelligence.certificates.costSavings / 100000).toFixed(0)}K</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+
+    {/* Comprehensive Marketing Funnel */}
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <Target className="h-5 w-5 mr-2" />
+          Complete Marketing & Sales Funnel
+        </CardTitle>
+        <CardDescription>
+          End-to-end customer journey with conversion optimization insights
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {advancedSalesFunnel.map((stage, index) => {
+            const conversionFromPrevious = index > 0 ? ((stage.volume / advancedSalesFunnel[index - 1].volume) * 100).toFixed(1) : "100.0";
+            const width = (stage.conversion * 5) + 20; // Scale width for better visibility
+            
+            return (
+              <div key={stage.stage} className="relative">
+                <div 
+                  className="bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg p-4 relative overflow-hidden"
+                  style={{ width: `${width}%`, minWidth: '300px' }}
+                >
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h4 className="font-semibold text-lg">{stage.stage}</h4>
+                      <p className="text-blue-100">{stage.volume.toLocaleString()} prospects</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xl font-bold">{stage.conversion}%</div>
+                      {index > 0 && (
+                        <div className="text-blue-200 text-sm">
+                          {conversionFromPrevious}% from previous
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {stage.revenue > 0 && (
+                    <div className="mt-2 text-blue-100">
+                      Revenue: ₹{(stage.revenue / 100000).toFixed(1)}L | Cost: ₹{stage.cost.toLocaleString()}
+                    </div>
+                  )}
+                </div>
+                {index < advancedSalesFunnel.length - 1 && (
+                  <div className="flex justify-center my-2">
+                    <ChevronRight className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+
+    {/* AI-Powered Predictive Revenue Forecasting */}
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <Brain className="h-5 w-5 mr-2" />
+          AI-Powered Revenue Forecasting
+        </CardTitle>
+        <CardDescription>
+          Machine learning revenue projections with confidence intervals
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ResponsiveContainer width="100%" height={400}>
+          <AreaChart data={predictiveAnalytics}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip formatter={(value, name) => [`₹${(value as number / 100000).toFixed(1)}L`, name === 'projected' ? 'AI Projection' : name === 'confidence' ? 'Confidence %' : 'Last Year Actual']} />
+            <Legend />
+            <Area type="monotone" dataKey="actualLastYear" stackId="1" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} name="Last Year Actual" />
+            <Area type="monotone" dataKey="projected" stackId="2" stroke="#8884d8" fill="#8884d8" fillOpacity={0.8} name="AI Projection" />
+            <Line type="monotone" dataKey="confidence" stroke="#ff7300" strokeWidth={3} name="Confidence %" />
+          </AreaChart>
+        </ResponsiveContainer>
+        <div className="mt-4 grid grid-cols-3 gap-4">
+          <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+            <div className="text-2xl font-bold text-green-700">₹3.45Cr</div>
+            <div className="text-sm text-green-600">Projected Q2 Revenue</div>
+          </div>
+          <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <div className="text-2xl font-bold text-blue-700">91%</div>
+            <div className="text-sm text-blue-600">Confidence Level</div>
+          </div>
+          <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+            <div className="text-2xl font-bold text-orange-700">+28%</div>
+            <div className="text-sm text-orange-600">YoY Growth</div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+
+    {/* Business Intelligence Summary */}
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <Brain className="h-5 w-5 mr-2" />
+          Business Intelligence Summary
+        </CardTitle>
+        <CardDescription>
+          AI-powered insights and recommendations for business growth
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
+            <div className="flex items-center mb-2">
+              <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+              <span className="font-medium text-green-800 dark:text-green-200">Strengths</span>
+            </div>
+            <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
+              <li>• High student satisfaction (4.8/5)</li>
+              <li>• Strong revenue growth (+34.2%)</li>
+              <li>• Excellent completion rate (89.1%)</li>
+              <li>• Low churn rate (2.1%)</li>
+            </ul>
+          </div>
+
+          <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200">
+            <div className="flex items-center mb-2">
+              <AlertTriangle className="h-4 w-4 text-orange-600 mr-2" />
+              <span className="font-medium text-orange-800 dark:text-orange-200">Opportunities</span>
+            </div>
+            <ul className="text-sm text-orange-700 dark:text-orange-300 space-y-1">
+              <li>• Increase lead conversion rate</li>
+              <li>• Expand to new markets</li>
+              <li>• Enhance automation efficiency</li>
+              <li>• Optimize pricing strategy</li>
+            </ul>
+          </div>
+
+          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200">
+            <div className="flex items-center mb-2">
+              <Zap className="h-4 w-4 text-blue-600 mr-2" />
+              <span className="font-medium text-blue-800 dark:text-blue-200">Next Actions</span>
+            </div>
+            <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+              <li>• Implement advanced lead scoring</li>
+              <li>• Launch referral program</li>
+              <li>• Improve WhatsApp conversion</li>
+              <li>• Develop mobile app</li>
+            </ul>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+// Enhanced Student Analytics Dashboard
+const StudentAnalytics = () => (
+  <div className="space-y-6">
+    <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          Student Success Analytics
+        </h1>
+        <p className="text-lg text-muted-foreground mt-2">
+          Comprehensive student lifecycle and performance intelligence
+        </p>
+      </div>
+      <div className="flex items-center space-x-3">
+        <Button size="sm" variant="outline">
+          <Download className="h-4 w-4 mr-2" />
+          Export Analytics
+        </Button>
+        <Button size="sm" variant="default">
+          <Mail className="h-4 w-4 mr-2" />
+          Email Report
+        </Button>
+      </div>
+    </div>
+
+    {/* Enhanced Student Metrics Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Total Enrolled</CardTitle>
+          <Users className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">3,247</div>
+          <p className="text-xs text-muted-foreground">
+            <span className="text-green-500">+234</span> this month
+          </p>
+          <Progress value={72} className="mt-2 h-1" />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Active Leads</CardTitle>
+          <UserPlus className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">1,456</div>
+          <p className="text-xs text-muted-foreground">
+            <span className="text-green-500">+18.2%</span> conversion rate
+          </p>
+          <Progress value={64} className="mt-2 h-1" />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+          <GraduationCap className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">89.3%</div>
+          <p className="text-xs text-muted-foreground">
+            <span className="text-green-500">+2.1%</span> improvement
+          </p>
+          <Progress value={89} className="mt-2 h-1" />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Satisfaction</CardTitle>
+          <Star className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">4.8/5</div>
+          <p className="text-xs text-muted-foreground">
+            <span className="text-green-500">+0.2</span> increase
+          </p>
+          <Progress value={96} className="mt-2 h-1" />
+        </CardContent>
+      </Card>
+    </div>
+
+    {/* Student Funnel Stages Analysis */}
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <Target className="h-5 w-5 mr-2" />
+          Student Journey Funnel
+        </CardTitle>
+        <CardDescription>Complete student lifecycle from lead to graduation</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {[
+            { stage: "Website Visitors", count: 45670, conversion: 100, description: "Monthly website traffic" },
+            { stage: "Lead Capture", count: 8234, conversion: 18.0, description: "Demo requests & info downloads" },
+            { stage: "Qualified Leads", count: 4567, conversion: 10.0, description: "Meets enrollment criteria" },
+            { stage: "Trial/Demo", count: 2341, conversion: 5.1, description: "Attended demo sessions" },
+            { stage: "Enrollment", count: 1247, conversion: 2.7, description: "Paid & started course" },
+            { stage: "Active Learning", count: 1089, conversion: 2.4, description: "Regular participation" },
+            { stage: "Completion", count: 973, conversion: 2.1, description: "Successfully graduated" },
+            { stage: "Placement", count: 876, conversion: 1.9, description: "Got job placements" }
+          ].map((stage, index) => {
+            const width = Math.max((stage.conversion * 4) + 15, 25); // Scale for visibility
+            
+            return (
+              <div key={stage.stage} className="relative">
+                <div 
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg p-4"
+                  style={{ width: `${width}%`, minWidth: '320px' }}
+                >
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h4 className="font-semibold text-lg">{stage.stage}</h4>
+                      <p className="text-purple-100">{stage.description}</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xl font-bold">{stage.count.toLocaleString()}</div>
+                      <div className="text-purple-200 text-sm">{stage.conversion}% of total</div>
+                    </div>
+                  </div>
+                </div>
+                {index < 7 && (
+                  <div className="flex justify-center my-2">
+                    <ChevronRight className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+
+    {/* Course Preferences & Performance */}
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <BookOpen className="h-5 w-5 mr-2" />
+          Course Preferences & Performance Analytics
+        </CardTitle>
+        <CardDescription>Detailed analysis of student preferences and course effectiveness</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <h4 className="font-semibold mb-4">Average Course Preferences</h4>
+            <div className="space-y-3">
+              {[
+                { course: "Medical Coding", preference: 85, enrolled: 567, avgRating: 4.8 },
+                { course: "NEET Coaching", preference: 78, enrolled: 289, avgRating: 4.9 },
+                { course: "JEE Coaching", preference: 72, enrolled: 334, avgRating: 4.6 },
+                { course: "Medical Billing", preference: 68, enrolled: 423, avgRating: 4.7 },
+                { course: "CBSE/ICSE", preference: 61, enrolled: 678, avgRating: 4.5 }
+              ].map((item, index) => (
+                <div key={index} className="p-3 bg-muted/30 rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">{item.course}</span>
+                    <span className="text-sm text-muted-foreground">{item.enrolled} enrolled</span>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="flex-1">
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>Preference Score</span>
+                        <span>{item.preference}%</span>
+                      </div>
+                      <Progress value={item.preference} className="h-2" />
+                    </div>
+                    <div className="flex items-center">
+                      <Star className="h-4 w-4 text-yellow-500 mr-1" />
+                      <span className="font-medium">{item.avgRating}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="font-semibold mb-4">Student Demographics & Behavior</h4>
+            <div className="space-y-3">
+              {[
+                { metric: "Avg Age", value: "24.3 years", description: "Primary demographic" },
+                { metric: "Study Time/Day", value: "4.2 hours", description: "Average engagement" },
+                { metric: "Course Duration", value: "6.8 months", description: "Average completion time" },
+                { metric: "Mobile Usage", value: "67.8%", description: "Access via mobile" },
+                { metric: "Weekend Activity", value: "43.2%", description: "Weekend study rate" },
+                { metric: "Peer Interaction", value: "78.9%", description: "Community participation" },
+                { metric: "Resource Downloads", value: "89.3%", description: "Material utilization" },
+                { metric: "Live Session Attendance", value: "82.1%", description: "Real-time participation" }
+              ].map((item, index) => (
+                <div key={index} className="flex justify-between items-center p-2 hover:bg-muted/30 rounded">
+                  <div>
+                    <div className="font-medium">{item.metric}</div>
+                    <div className="text-xs text-muted-foreground">{item.description}</div>
+                  </div>
+                  <div className="font-bold text-lg">{item.value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+// Enhanced Marketing ROI Dashboard
+const MarketingROI = () => (
+  <div className="space-y-6">
+    <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+          Marketing ROI Intelligence
+        </h1>
+        <p className="text-lg text-muted-foreground mt-2">
+          Comprehensive marketing performance and customer acquisition analytics
+        </p>
+      </div>
+      <div className="flex items-center space-x-3">
+        <Button size="sm" variant="outline">
+          <Download className="h-4 w-4 mr-2" />
+          Export Report
+        </Button>
+        <Button size="sm" variant="default">
+          <Mail className="h-4 w-4 mr-2" />
+          Email Report
+        </Button>
+      </div>
+    </div>
+
+    {/* Marketing Cost Analysis */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Total Marketing Spend</CardTitle>
+          <IndianRupee className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">₹18.4L</div>
+          <p className="text-xs text-muted-foreground">
+            <span className="text-red-500">+12.3%</span> from last month
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Customer Acquisition Cost</CardTitle>
+          <Target className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">₹1,247</div>
+          <p className="text-xs text-muted-foreground">
+            <span className="text-green-500">-8.2%</span> improvement
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Marketing ROI</CardTitle>
+          <Percent className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">340%</div>
+          <p className="text-xs text-muted-foreground">
+            <span className="text-green-500">+45%</span> increase
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Lead Quality Score</CardTitle>
+          <Star className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">8.7/10</div>
+          <p className="text-xs text-muted-foreground">
+            <span className="text-green-500">+0.4</span> improvement
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+
+    {/* Marketing Channel Performance */}
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <BarChart3 className="h-5 w-5 mr-2" />
+          Marketing Channel Performance & Costs
+        </CardTitle>
+        <CardDescription>Detailed breakdown of marketing investments and returns</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[
+            {
+              channel: "WhatsApp Marketing",
+              cost: 4567890,
+              leads: 2340,
+              conversions: 421,
+              costPerLead: 78,
+              roi: 420
+            },
+            {
+              channel: "Domain & Website",
+              cost: 234000,
+              leads: 890,
+              conversions: 156,
+              costPerLead: 263,
+              roi: 180
+            },
+            {
+              channel: "Email Marketing",
+              cost: 156000,
+              leads: 1240,
+              conversions: 234,
+              costPerLead: 126,
+              roi: 290
+            },
+            {
+              channel: "AI Calling System",
+              cost: 890000,
+              leads: 1560,
+              conversions: 312,
+              costPerLead: 571,
+              roi: 380
+            },
+            {
+              channel: "Social Media Ads",
+              cost: 890000,
+              leads: 1890,
+              conversions: 245,
+              costPerLead: 471,
+              roi: 210
+            },
+            {
+              channel: "Content Marketing",
+              cost: 340000,
+              leads: 670,
+              conversions: 89,
+              costPerLead: 507,
+              roi: 150
+            }
+          ].map((channel, index) => (
+            <Card key={index} className="p-4">
+              <div className="flex justify-between items-start mb-3">
+                <h4 className="font-semibold">{channel.channel}</h4>
+                <Badge variant={channel.roi > 300 ? 'default' : channel.roi > 200 ? 'secondary' : 'destructive'}>
+                  {channel.roi}% ROI
+                </Badge>
+              </div>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Investment:</span>
+                  <span className="font-medium">₹{(channel.cost / 100000).toFixed(1)}L</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Leads Generated:</span>
+                  <span className="font-medium">{channel.leads}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Conversions:</span>
+                  <span className="font-medium">{channel.conversions}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Cost per Lead:</span>
+                  <span className="font-medium">₹{channel.costPerLead}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Conversion Rate:</span>
+                  <span className="font-medium">{((channel.conversions / channel.leads) * 100).toFixed(1)}%</span>
+                </div>
+              </div>
+              <Progress value={(channel.roi / 5)} className="mt-3 h-2" />
+            </Card>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+
+    {/* Enhanced Marketing Funnel */}
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <Target className="h-5 w-5 mr-2" />
+          Marketing Conversion Funnel
+        </CardTitle>
+        <CardDescription>
+          Complete marketing funnel with cost analysis and optimization insights
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {advancedSalesFunnel.map((stage, index) => {
+            const conversionFromPrevious = index > 0 ? ((stage.volume / advancedSalesFunnel[index - 1].volume) * 100).toFixed(1) : "100.0";
+            const width = Math.max((stage.conversion * 6) + 25, 35); // Enhanced width for better text display
+            const costPerProspect = stage.cost / stage.volume;
+            
+            return (
+              <div key={stage.stage} className="relative">
+                <div 
+                  className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg p-5 relative overflow-hidden shadow-lg"
+                  style={{ width: `${width}%`, minWidth: '400px' }} // Increased minimum width
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex-1">
+                      <h4 className="font-bold text-xl mb-1">{stage.stage}</h4>
+                      <p className="text-orange-100 text-base">
+                        {stage.volume.toLocaleString()} prospects
+                      </p>
+                    </div>
+                    <div className="text-right ml-4">
+                      <div className="text-2xl font-bold">{stage.conversion}%</div>
+                      {index > 0 && (
+                        <div className="text-orange-200 text-sm">
+                          {conversionFromPrevious}% from previous
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center text-orange-100 text-sm">
+                    <span>Cost: ₹{stage.cost.toLocaleString()}</span>
+                    <span>Cost/Prospect: ₹{costPerProspect.toFixed(0)}</span>
+                    {stage.revenue > 0 && <span>Revenue: ₹{(stage.revenue / 100000).toFixed(1)}L</span>}
+                  </div>
+                </div>
+                {index < advancedSalesFunnel.length - 1 && (
+                  <div className="flex justify-center my-3">
+                    <div className="bg-gray-200 dark:bg-gray-700 rounded-full p-2">
+                      <ChevronRight className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        
+        {/* Funnel Summary */}
+        <div className="mt-6 grid grid-cols-3 gap-4">
+          <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+            <div className="text-2xl font-bold text-orange-700">₹67.8L</div>
+            <div className="text-sm text-orange-600">Total Marketing Investment</div>
+          </div>
+          <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+            <div className="text-2xl font-bold text-green-700">2.39%</div>
+            <div className="text-sm text-green-600">Overall Conversion Rate</div>
+          </div>
+          <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <div className="text-2xl font-bold text-blue-700">340%</div>
+            <div className="text-sm text-blue-600">Marketing ROI</div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+
+    {/* Campaign Performance Over Time */}
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <LineChartIcon className="h-5 w-5 mr-2" />
+          Campaign Performance Trends
+        </CardTitle>
+        <CardDescription>Monthly marketing performance and trend analysis</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={monthlyRevenueData.slice(-6)}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="medicalCoding" stroke="#8884d8" strokeWidth={3} name="Medical Coding Revenue" />
+            <Line type="monotone" dataKey="medicalBilling" stroke="#82ca9d" strokeWidth={3} name="Medical Billing Revenue" />
+            <Line type="monotone" dataKey="academics" stroke="#ffc658" strokeWidth={3} name="Academic Coaching Revenue" />
+          </LineChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
+  </div>
+);
               <span className="font-bold">{automationIntelligence.aiCalling.conversionRate}%</span>
             </div>
             <div className="flex justify-between">
@@ -1072,7 +1612,15 @@ const SummaryReports = () => (
       <div className="flex items-center space-x-3">
         <Button size="sm" variant="outline">
           <Download className="h-4 w-4 mr-2" />
-          Export Report
+          Export PDF
+        </Button>
+        <Button size="sm" variant="outline">
+          <FileText className="h-4 w-4 mr-2" />
+          Export Excel
+        </Button>
+        <Button size="sm" variant="default">
+          <Mail className="h-4 w-4 mr-2" />
+          Email Report
         </Button>
       </div>
     </div>
@@ -1237,59 +1785,6 @@ const SummaryReports = () => (
       </Card>
     </div>
 
-    {/* Business Insights Summary */}
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <Brain className="h-5 w-5 mr-2" />
-          Business Intelligence Summary
-        </CardTitle>
-        <CardDescription>
-          AI-powered insights and recommendations for business growth
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
-            <div className="flex items-center mb-2">
-              <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-              <span className="font-medium text-green-800 dark:text-green-200">Strengths</span>
-            </div>
-            <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
-              <li>• High student satisfaction (4.8/5)</li>
-              <li>• Strong revenue growth (+34.2%)</li>
-              <li>• Excellent completion rate (89.1%)</li>
-              <li>• Low churn rate (2.1%)</li>
-            </ul>
-          </div>
 
-          <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200">
-            <div className="flex items-center mb-2">
-              <AlertTriangle className="h-4 w-4 text-orange-600 mr-2" />
-              <span className="font-medium text-orange-800 dark:text-orange-200">Opportunities</span>
-            </div>
-            <ul className="text-sm text-orange-700 dark:text-orange-300 space-y-1">
-              <li>• Increase lead conversion rate</li>
-              <li>• Expand to new markets</li>
-              <li>• Enhance automation efficiency</li>
-              <li>• Optimize pricing strategy</li>
-            </ul>
-          </div>
-
-          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200">
-            <div className="flex items-center mb-2">
-              <Zap className="h-4 w-4 text-blue-600 mr-2" />
-              <span className="font-medium text-blue-800 dark:text-blue-200">Next Actions</span>
-            </div>
-            <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-              <li>• Implement advanced lead scoring</li>
-              <li>• Launch referral program</li>
-              <li>• Improve WhatsApp conversion</li>
-              <li>• Develop mobile app</li>
-            </ul>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
   </div>
 );
