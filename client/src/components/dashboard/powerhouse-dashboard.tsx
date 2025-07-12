@@ -148,6 +148,7 @@ const automationIntelligence = {
   },
   aiCalling: {
     callsCompleted: 23470,
+    callsProcessed: 23470,
     successRate: 76.8,
     avgCallDuration: "4.2min",
     leadQuality: 8.3,
@@ -723,7 +724,7 @@ const MarketingROI = () => (
             </div>
             <div className="flex justify-between">
               <span>Cost Savings</span>
-              <span className="font-bold">₹{(automationIntelligence.certificates.costSavings / 100000).toFixed(0)}K</span>
+              <span className="font-bold">₹{(automationIntelligence.certificates.costSaving / 1000).toFixed(0)}K</span>
             </div>
           </div>
         </CardContent>
@@ -1091,8 +1092,8 @@ const StudentAnalytics = () => (
   </div>
 );
 
-// Enhanced Marketing ROI Dashboard
-const MarketingROI = () => (
+// Operational KPIs Dashboard
+const OperationalKPIs = () => (
   <div className="space-y-6">
     <div className="flex items-center justify-between">
       <div>
