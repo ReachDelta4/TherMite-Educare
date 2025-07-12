@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { FullPageLoader } from "./components/ui/loader";
-import { Helmet } from "react-helmet";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 
 const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -35,44 +35,46 @@ const App: React.FC = () => {
   }));
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Helmet>
-          <title>TherMite Educare OS Demo</title>
-          <link rel="icon" href="/logo.png" type="image/png" />
-          <meta name="description" content="TherMite Educare Operating System - Centralized Management Platform" />
-        </Helmet>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Suspense fallback={<FullPageLoader />}>
-            <Routes>
-              <Route path="/" element={<Index />}>
-                <Route index element={<OverviewPage />} />
-                <Route path="dashboard" element={<CustomizableDashboard />} />
-                <Route path="overview" element={<OverviewPage />} />
-                <Route path="whatsapp" element={<WhatsAppBot />} />
-                <Route path="certificates" element={<CertificateGenerator />} />
-                <Route path="ai-calling" element={<AICallingAgent />} />
-                
-                {/* User Management Routes */}
-                <Route path="users" element={<UserManagement />} />
-                <Route path="profile" element={<UserProfile />} />
-                <Route path="users/roles" element={<RolesPermissions />} />
-                
-                {/* Analytics Routes */}
-                <Route path="analytics" element={<AdvancedAnalytics />} />
-                <Route path="reports" element={<ReportBuilder />} />
-                <Route path="analytics/scheduled" element={<ScheduledReportsPage />} />
-              </Route>
-              <Route path="/certificate-builder" element={<CertificateBuilderPage />} />
-              <Route path="/certificate-builder/:templateId" element={<CertificateBuilderPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Helmet>
+            <title>TherMite Educare OS Demo</title>
+            <link rel="icon" href="/logo.png" type="image/png" />
+            <meta name="description" content="TherMite Educare Operating System - Centralized Management Platform" />
+          </Helmet>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Suspense fallback={<FullPageLoader />}>
+              <Routes>
+                <Route path="/" element={<Index />}>
+                  <Route index element={<OverviewPage />} />
+                  <Route path="dashboard" element={<CustomizableDashboard />} />
+                  <Route path="overview" element={<OverviewPage />} />
+                  <Route path="whatsapp" element={<WhatsAppBot />} />
+                  <Route path="certificates" element={<CertificateGenerator />} />
+                  <Route path="ai-calling" element={<AICallingAgent />} />
+                  
+                  {/* User Management Routes */}
+                  <Route path="users" element={<UserManagement />} />
+                  <Route path="profile" element={<UserProfile />} />
+                  <Route path="users/roles" element={<RolesPermissions />} />
+                  
+                  {/* Analytics Routes */}
+                  <Route path="analytics" element={<AdvancedAnalytics />} />
+                  <Route path="reports" element={<ReportBuilder />} />
+                  <Route path="analytics/scheduled" element={<ScheduledReportsPage />} />
+                </Route>
+                <Route path="/certificate-builder" element={<CertificateBuilderPage />} />
+                <Route path="/certificate-builder/:templateId" element={<CertificateBuilderPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 };
 
