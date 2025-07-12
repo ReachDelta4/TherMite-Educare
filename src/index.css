@@ -122,7 +122,19 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
-  body {
+  html, body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* Prevent horizontal scrolling globally */
+  * {
+    box-sizing: border-box;
+  }
+
+  /* Ensure all containers respect overflow */
+  .sidebar-container * {
+    overflow-x: hidden;
   }
 }

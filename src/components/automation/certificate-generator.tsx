@@ -6,11 +6,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Award, Upload, Download, FileText, Image, Eye, Settings, Play, BarChart3, Users, CheckCircle, AlertCircle, Palette } from "lucide-react";
+import { Award, Upload, Download, FileText, Image, Eye, Settings, Play, BarChart3, Users, CheckCircle, AlertCircle, Palette, QrCode } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { CertificateVerification } from "./certificate-verification";
 
-export function CertificateGenerator() {
+function Generator() {
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [studentData, setStudentData] = useState("");
 
@@ -192,8 +193,8 @@ export function CertificateGenerator() {
               
               <Separator />
               
-              <div className="flex justify-between items-center pt-4">
-                <div className="flex space-x-3">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4">
+                <div className="flex flex-wrap gap-3">
                   <Button variant="outline" size="lg">
                     <Eye className="h-4 w-4 mr-2" />
                     Preview Template
@@ -203,7 +204,7 @@ export function CertificateGenerator() {
                     Template Settings
                   </Button>
                 </div>
-                <Button size="lg" disabled={!selectedTemplate} className="px-8">
+                <Button size="lg" disabled={!selectedTemplate} className="w-full sm:w-auto px-6">
                   <Play className="h-4 w-4 mr-2" />
                   Generate Certificates
                 </Button>
@@ -294,6 +295,55 @@ export function CertificateGenerator() {
           </Card>
         </div>
       </div>
+    </div>
+  );
+}
+
+export function CertificateGenerator() {
+  return (
+    <div className="space-y-6">
+      <Card className="border-0 bg-gradient-subtle shadow-elegant">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-primary/10 rounded-lg">
+                <Award className="h-8 w-8 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-2xl font-bold">Certificate Suite</CardTitle>
+                <CardDescription className="text-base">
+                  Generate, manage, and verify certificates
+                </CardDescription>
+              </div>
+            </div>
+            <Link to="/certificate-builder">
+                <Button>
+                    <Palette className="h-4 w-4 mr-2" />
+                    Create Template
+                </Button>
+            </Link>
+          </div>
+        </CardHeader>
+      </Card>
+      
+      <Tabs defaultValue="generator" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="generator">
+            <Award className="h-4 w-4 mr-2" />
+            Generator
+          </TabsTrigger>
+          <TabsTrigger value="verification">
+            <QrCode className="h-4 w-4 mr-2" />
+            Verification
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="generator" className="mt-6">
+            <Generator />
+        </TabsContent>
+        <TabsContent value="verification" className="mt-6">
+            <CertificateVerification />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

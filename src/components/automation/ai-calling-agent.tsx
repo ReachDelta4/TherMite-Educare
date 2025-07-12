@@ -46,16 +46,14 @@ import {
   Trash2,
   Edit,
   BookUser,
-  CheckCircle,
-  Zap,
-  TrendingUp,
-  BarChart,
+  GitBranch
 } from "lucide-react";
 import { useState } from "react";
-import { StatCard } from "@/components/ui/stat-card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { ChartContainer, ChartTooltip, ChartLegend, ChartLegendContent, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import * as RechartsPrimitive from "recharts";
+import { VoiceCustomization } from "./voice-customization";
+import { CallScriptBuilder } from "./call-script-builder";
 
 // Mock Data - Replace with API calls
 const agents = [
@@ -116,117 +114,119 @@ function CampaignDashboard() {
   ];
 
   return (
-    <div className="space-y-8 w-full max-w-5xl mx-auto px-2">
+    <div className="space-y-8 w-full overflow-hidden">
       {/* Analytics Charts */}
-      <div className="flex flex-row gap-6 justify-center items-stretch w-full">
-        {/* Calls per Day Bar Chart */}
-        <Card className="flex-1 min-w-0">
-          <CardHeader>
-            <CardTitle>Calls Per Day</CardTitle>
-            <CardDescription>Volume of lead qualifying calls this week</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={{ calls: { label: "Calls", color: "#2563eb" } }}
-              className="h-56 w-full"
-            >
-              <RechartsPrimitive.BarChart data={callsPerDay}>
-                <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
-                <RechartsPrimitive.XAxis dataKey="date" />
-                <RechartsPrimitive.YAxis allowDecimals={false} />
-                <ChartTooltip />
-                <RechartsPrimitive.Bar dataKey="calls" fill="#2563eb" radius={[4, 4, 0, 0]} />
-              </RechartsPrimitive.BarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-        {/* Qualification Rate Pie Chart */}
-        <Card className="flex-1 min-w-0">
-          <CardHeader>
-            <CardTitle>Qualification Rate</CardTitle>
-            <CardDescription>Ratio of qualified vs not qualified leads</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={{ Qualified: { label: "Qualified", color: "#22c55e" }, "Not Qualified": { label: "Not Qualified", color: "#ef4444" } }}
-              className="h-56 w-full"
-            >
-              <RechartsPrimitive.PieChart>
-                <RechartsPrimitive.Pie
-                  data={qualificationPie}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={60}
-                  innerRadius={36}
-                  label
-                >
-                  {qualificationPie.map((entry, idx) => (
-                    <RechartsPrimitive.Cell key={`cell-${idx}`} fill={entry.name === "Qualified" ? "#22c55e" : "#ef4444"} />
-                  ))}
-                </RechartsPrimitive.Pie>
-                <ChartLegendContent payload={qualificationPie.map((d, i) => ({ value: d.name, color: d.name === "Qualified" ? "#22c55e" : "#ef4444" }))} />
-                <ChartTooltip />
-              </RechartsPrimitive.PieChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-        {/* Call Outcomes Bar Chart */}
-        <Card className="flex-1 min-w-0">
-      <CardHeader>
-            <CardTitle>Call Outcomes</CardTitle>
-            <CardDescription>Distribution of call results</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={{ value: { label: "Count", color: "#6366f1" } }}
-              className="h-56 w-full"
-            >
-              <RechartsPrimitive.BarChart data={callOutcomes}>
-                <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
-                <RechartsPrimitive.XAxis dataKey="outcome" />
-                <RechartsPrimitive.YAxis allowDecimals={false} />
-                <ChartTooltip />
-                <RechartsPrimitive.Bar dataKey="value" fill="#6366f1" radius={[4, 4, 0, 0]} />
-              </RechartsPrimitive.BarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-            </div>
+      <div className="w-full overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
+          {/* Calls per Day Bar Chart */}
+          <Card className="w-full min-w-0">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium">Calls Per Day</CardTitle>
+              <CardDescription className="text-xs">Volume of lead qualifying calls this week</CardDescription>
+            </CardHeader>
+            <CardContent className="p-4">
+              <ChartContainer
+                config={{ calls: { label: "Calls", color: "#2563eb" } }}
+                className="h-48 w-full"
+              >
+                <RechartsPrimitive.BarChart data={callsPerDay}>
+                  <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
+                  <RechartsPrimitive.XAxis dataKey="date" fontSize={10} />
+                  <RechartsPrimitive.YAxis allowDecimals={false} fontSize={10} />
+                  <ChartTooltip />
+                  <RechartsPrimitive.Bar dataKey="calls" fill="#2563eb" radius={[4, 4, 0, 0]} />
+                </RechartsPrimitive.BarChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+          {/* Qualification Rate Pie Chart */}
+          <Card className="w-full min-w-0">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium">Qualification Rate</CardTitle>
+              <CardDescription className="text-xs">Ratio of qualified vs not qualified leads</CardDescription>
+            </CardHeader>
+            <CardContent className="p-4">
+              <ChartContainer
+                config={{ Qualified: { label: "Qualified", color: "#22c55e" }, "Not Qualified": { label: "Not Qualified", color: "#ef4444" } }}
+                className="h-48 w-full"
+              >
+                <RechartsPrimitive.PieChart>
+                  <RechartsPrimitive.Pie
+                    data={qualificationPie}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={50}
+                    innerRadius={30}
+                    label
+                  >
+                    {qualificationPie.map((entry, idx) => (
+                      <RechartsPrimitive.Cell key={`cell-${idx}`} fill={entry.name === "Qualified" ? "#22c55e" : "#ef4444"} />
+                    ))}
+                  </RechartsPrimitive.Pie>
+                  <ChartLegendContent payload={qualificationPie.map((d, i) => ({ value: d.name, color: d.name === "Qualified" ? "#22c55e" : "#ef4444" }))} />
+                  <ChartTooltip />
+                </RechartsPrimitive.PieChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+          {/* Call Outcomes Bar Chart */}
+          <Card className="w-full min-w-0">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium">Call Outcomes</CardTitle>
+              <CardDescription className="text-xs">Distribution of call results</CardDescription>
+            </CardHeader>
+            <CardContent className="p-4">
+              <ChartContainer
+                config={{ value: { label: "Count", color: "#6366f1" } }}
+                className="h-48 w-full"
+              >
+                <RechartsPrimitive.BarChart data={callOutcomes}>
+                  <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
+                  <RechartsPrimitive.XAxis dataKey="outcome" fontSize={10} />
+                  <RechartsPrimitive.YAxis allowDecimals={false} fontSize={10} />
+                  <ChartTooltip />
+                  <RechartsPrimitive.Bar dataKey="value" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                </RechartsPrimitive.BarChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
       {/* Existing statistics and controls */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Launch a New Campaign</CardTitle>
               <CardDescription>Configure and start a new automated calling campaign.</CardDescription>
-      </CardHeader>
+            </CardHeader>
             <CardContent className="space-y-4">
-            <div>
+               <div>
                 <Label htmlFor="agent-select">Select Agent</Label>
                 <Select>
-                <SelectTrigger className="mt-2">
+                    <SelectTrigger className="mt-2">
                         <SelectValue placeholder="Choose an agent" />
-                </SelectTrigger>
-                <SelectContent>
+                    </SelectTrigger>
+                    <SelectContent>
                         {agents.map((agent) => (
                             <SelectItem key={agent.id} value={agent.id}>
                                 {agent.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+              </div>
+              <div>
                 <Label htmlFor="phone-list">Contact List (CSV)</Label>
-              <div className="flex gap-2 mt-2">
-                <Input
-                  id="phone-list"
+                <div className="flex gap-2 mt-2">
+                  <Input
+                    id="phone-list"
                     type="file"
-                  className="flex-1"
-                />
-                <Button variant="outline" size="icon">
+                    className="flex-1"
+                  />
+                   <Button variant="outline" size="icon">
                     <Users className="h-4 w-4" />
                   </Button>
                 </div>
@@ -243,27 +243,27 @@ function CampaignDashboard() {
               </div>
             </CardContent>
           </Card>
-          </div>
-          
-          <div className="space-y-4">
-            <div className="p-4 border rounded-lg bg-muted/50">
+        </div>
+
+        <div className="space-y-4">
+          <div className="p-4 border rounded-lg bg-muted/50">
             <h4 className="font-medium mb-2">Live Campaign Statistics</h4>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <div className="text-2xl font-bold text-primary">89</div>
-                  <div className="text-muted-foreground">Calls Made Today</div>
-                </div>
-                <div>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <div className="text-2xl font-bold text-primary">89</div>
+                <div className="text-muted-foreground">Calls Made Today</div>
+              </div>
+              <div>
                 <div className="text-2xl font-bold text-green-600">67%</div>
-                  <div className="text-muted-foreground">Connection Rate</div>
-                </div>
-                <div>
+                <div className="text-muted-foreground">Connection Rate</div>
+              </div>
+              <div>
                 <div className="text-2xl font-bold text-blue-600">23</div>
-                  <div className="text-muted-foreground">Follow-ups Scheduled</div>
-                </div>
-                <div>
+                <div className="text-muted-foreground">Follow-ups Scheduled</div>
+              </div>
+              <div>
                 <div className="text-2xl font-bold">2m 3s</div>
-                  <div className="text-muted-foreground">Avg Call Duration</div>
+                <div className="text-muted-foreground">Avg Call Duration</div>
               </div>
             </div>
           </div>
@@ -272,19 +272,19 @@ function CampaignDashboard() {
                     <CardTitle>Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  <Mic className="h-4 w-4 mr-1" />
+                    <Button variant="outline" size="sm">
+                        <Mic className="h-4 w-4 mr-1" />
                         Test an Agent
-                </Button>
+                    </Button>
                     <Button variant="destructive" size="sm">
                         <PhoneCall className="h-4 w-4 mr-1" />
                         Stop All Campaigns
-                </Button>
+                    </Button>
                 </CardContent>
             </Card>
-              </div>
-            </div>
-          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -351,7 +351,7 @@ function PhoneNumberManagement() {
                         <PlusCircle className="h-4 w-4 mr-2" />
                         Add Number
                     </Button>
-        </div>
+                </div>
             </CardHeader>
             <CardContent>
                 <Table>
@@ -423,7 +423,7 @@ function KnowledgeBaseManagement() {
                                     </Button>
                                     <Button variant="ghost" size="icon">
                                         <Trash2 className="h-4 w-4 text-red-500" />
-          </Button>
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -510,59 +510,52 @@ function CallLogView() {
 
 export function AICallingAgent() {
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <div className="flex items-center space-x-2">
-          <PhoneCall className="h-6 w-6 text-primary" />
-          <div>
-            <CardTitle>AI Calling Agent</CardTitle>
-            <CardDescription>
-              Manage automated calling campaigns, agents, and phone numbers.
-            </CardDescription>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Phone className="h-6 w-6 text-primary" />
+              <div>
+                <CardTitle>AI Calling Agent</CardTitle>
+                <CardDescription>Automate your outbound and inbound call campaigns</CardDescription>
+              </div>
+            </div>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="dashboard">
-                <PhoneCall className="h-4 w-4 mr-2" />
-                Dashboard
-            </TabsTrigger>
-            <TabsTrigger value="agents">
-                <Users className="h-4 w-4 mr-2" />
-                Agents
-            </TabsTrigger>
-            <TabsTrigger value="numbers">
-                <Phone className="h-4 w-4 mr-2" />
-                Phone Numbers
-            </TabsTrigger>
-            <TabsTrigger value="knowledge">
-                <BrainCircuit className="h-4 w-4 mr-2" />
-                Knowledge Base
-            </TabsTrigger>
-            <TabsTrigger value="logs">
-                <History className="h-4 w-4 mr-2" />
-                Call Logs
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="dashboard" className="mt-4">
-            <CampaignDashboard />
-          </TabsContent>
-          <TabsContent value="agents" className="mt-4">
-            <AgentManagement />
-          </TabsContent>
-           <TabsContent value="numbers" className="mt-4">
-            <PhoneNumberManagement />
-          </TabsContent>
-          <TabsContent value="knowledge" className="mt-4">
-            <KnowledgeBaseManagement />
-          </TabsContent>
-           <TabsContent value="logs" className="mt-4">
-            <CallLogView />
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+        </CardHeader>
+      </Card>
+      <Tabs defaultValue="dashboard" className="w-full">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="agents">Agents</TabsTrigger>
+          <TabsTrigger value="numbers">Phone Numbers</TabsTrigger>
+          <TabsTrigger value="knowledge">Knowledge Base</TabsTrigger>
+          <TabsTrigger value="voices">
+            <Volume2 className="h-4 w-4 mr-2" /> Voices
+          </TabsTrigger>
+          <TabsTrigger value="scripts">
+            <GitBranch className="h-4 w-4 mr-2" /> Scripts
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="dashboard" className="mt-6">
+          <CampaignDashboard />
+        </TabsContent>
+        <TabsContent value="agents" className="mt-6">
+          <AgentManagement />
+        </TabsContent>
+        <TabsContent value="numbers" className="mt-6">
+          <PhoneNumberManagement />
+        </TabsContent>
+        <TabsContent value="knowledge" className="mt-6">
+          <KnowledgeBaseManagement />
+        </TabsContent>
+        <TabsContent value="voices" className="mt-6">
+          <VoiceCustomization />
+        </TabsContent>
+        <TabsContent value="scripts" className="mt-6 h-full">
+          <CallScriptBuilder />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }

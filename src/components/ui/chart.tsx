@@ -353,6 +353,10 @@ function getPayloadConfigFromPayload(
     : config[key as keyof typeof config]
 }
 
+const ChartFunnel = RechartsPrimitive.Funnel;
+
+const ChartComposed = RechartsPrimitive.ComposedChart;
+
 export {
   ChartContainer,
   ChartTooltip,
@@ -360,4 +364,6 @@ export {
   ChartLegend,
   ChartLegendContent,
   ChartStyle,
+  ChartFunnel,
+  ChartComposed,
 }

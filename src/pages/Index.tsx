@@ -1,10 +1,13 @@
-
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Outlet, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const Index = () => {
+const IndexContent = () => {
   const location = useLocation();
+  const { state, toggleSidebar } = useSidebar();
+  const collapsed = state === "collapsed";
   
   const getPageTitle = () => {
     switch (location.pathname) {
@@ -41,28 +44,56 @@ const Index = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
-        
-        <div className="flex-1 flex flex-col">
-          {/* Header */}
-          <header className="h-14 flex items-center border-b border-border bg-background px-6">
-            <div className="flex items-center space-x-4">
-              <SidebarTrigger />
-              <div>
-                <h1 className="font-semibold text-lg">{getPageTitle()}</h1>
-                <p className="text-sm text-muted-foreground">{getPageDescription()}</p>
-              </div>
-            </div>
-          </header>
-
-          {/* Main Content */}
-          <main className="flex-1 p-6 overflow-auto">
-            <Outlet />
-          </main>
-        </div>
+    <div className="min-h-screen flex w-full bg-background relative">
+      <AppSidebar />
+      
+      {/* Custom Toggle Button */}
+      <div 
+        className="absolute top-1/2 z-50 transition-all duration-300 ease-in-out"
+        style={{
+          left: collapsed ? '3rem' : '16rem',
+          transform: 'translateX(-50%) translateY(-50%)'
+        }}
+      >
+        <Button
+          onClick={toggleSidebar}
+          size="icon"
+          variant="outline"
+          className="h-8 w-8 rounded-full bg-background border-2 shadow-lg hover:border-primary/50 transition-all hover:scale-110"
+        >
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4 text-primary" />
+          ) : (
+            <ChevronLeft className="h-4 w-4 text-primary" />
+          )}
+        </Button>
       </div>
+      
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Header */}
+        <header className="h-14 flex items-center border-b border-border bg-background px-6 flex-shrink-0">
+          <div className="flex items-center space-x-4 min-w-0">
+            <SidebarTrigger className="flex-shrink-0" />
+            <div className="min-w-0 overflow-hidden">
+              <h1 className="font-semibold text-lg truncate">{getPageTitle()}</h1>
+              <p className="text-sm text-muted-foreground truncate">{getPageDescription()}</p>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="flex-1 p-6 overflow-auto min-w-0">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+};
+
+const Index = () => {
+  return (
+    <SidebarProvider>
+      <IndexContent />
     </SidebarProvider>
   );
 };
