@@ -2,7 +2,8 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
-  Bot, BookOpen, Sparkles, KeyRound, BarChartHorizontalBig, Send, Users, Paintbrush, Cpu, ArrowRight, Mail, Phone, Clock, TrendingUp, Shield, Star, CheckCircle, AlertTriangle, Heart
+  Bot, BookOpen, Sparkles, KeyRound, BarChartHorizontalBig, Send, Users, Paintbrush, Cpu, ArrowRight, Mail, Phone, Clock, TrendingUp, Shield, Star, CheckCircle, AlertTriangle, Heart,
+  FileText, PieChart, FlowChart, MessageSquare, Workflow, Lock, Database, BarChart4, FileBarChart
 } from "lucide-react";
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -132,6 +133,39 @@ export const OverviewPage: React.FC = () => {
         </p>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <FeatureCard 
+            icon={Workflow}
+            title="Visual WhatsApp Flow Builder"
+            description="Design complex conversation flows with our drag-and-drop builder. Create branching paths, decision points, and personalized responses without writing a single line of code."
+            badge="New"
+          />
+          <FeatureCard 
+            icon={MessageSquare}
+            title="AI Call Script Builder"
+            description="Create intelligent call scripts that adapt to customer responses. Our AI helps craft the perfect script based on your best sales calls, ensuring consistency across your team."
+            badge="AI Powered"
+          />
+          <FeatureCard 
+            icon={Lock}
+            title="Role-Based Access Control"
+            description="Protect sensitive information with granular permissions. Assign specific roles to team members and control exactly what they can see and do within the system."
+          />
+          <FeatureCard 
+            icon={Clock}
+            title="Scheduled Reports Delivery"
+            description="Get critical business insights delivered automatically to your WhatsApp and email inbox. Morning briefings, weekly summaries, and custom reports sent right when you need them."
+          />
+          <FeatureCard 
+            icon={FileBarChart}
+            title="Advanced MIS Reporting"
+            description="Make better business decisions with comprehensive analytics. Track conversion rates, student progress, revenue forecasts, and more in easy-to-understand visualizations."
+          />
+          <FeatureCard 
+            icon={Database}
+            title="Central Management System"
+            description="Say goodbye to scattered spreadsheets. All your data lives in one secure place, accessible to the right people at the right time. Your entire business operation, centralized."
+            badge="Core Feature"
+          />
           <FeatureCard 
             icon={KeyRound}
             title="Smart Access Control"
