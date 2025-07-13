@@ -82,11 +82,9 @@ const userManagementItems = [
 ];
 
 const dashboardItems = [
-  { title: "Executive Overview", icon: BarChart3, url: "/dashboard" },
-  { title: "Summary Reports", icon: FileText, url: "/dashboard/summary" },
+  { title: "Summary Reports", icon: FileText, url: "/summary-reports" },
   { title: "Sales Intelligence", icon: LineChart, url: "/dashboard/sales" },
-  { title: "Student Analytics", icon: Users, url: "/dashboard/students" },
-  { title: "Marketing ROI", icon: Target, url: "/dashboard/marketing" },
+  { title: "Marketing ROI", icon: Target, url: "/dashboard/marketing", disabled: true },
   { title: "Real-time Reports", icon: Zap, url: "/dashboard/realtime" },
 ];
 
@@ -166,13 +164,37 @@ export function AppSidebar() {
             Dashboard & Analytics
           </SidebarGroupLabel>
           <SidebarGroupContent>
+            <div className="px-2 py-2 space-y-2">
+              <Button
+                size="sm"
+                className="w-full h-8 text-xs bg-blue-500 text-white hover:bg-purple-500 hover:text-white border-0"
+                onClick={() => {
+                  // Add Lead functionality
+                  console.log("Add Lead clicked");
+                }}
+              >
+                Add Lead
+              </Button>
+              <Button
+                size="sm"
+                className="w-full h-8 text-xs bg-blue-500 text-white hover:bg-purple-500 hover:text-white border-0"
+                onClick={() => {
+                  // Add Business Income/Expense functionality
+                  console.log("Add Business Income/Expense clicked");
+                }}
+              >
+                Add Business Income/Expense
+              </Button>
+            </div>
+            <Separator className="my-3 mx-2" />
             <SidebarMenu className="space-y-1">
               {dashboardItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={collapsed ? item.title : undefined}>
-                    <NavLink
-                      to={item.url}
-                      className={`flex items-center p-3 rounded-lg transition-colors ${getNavClass(item.url)} ${collapsed ? 'justify-center' : ''}`}
+                  {item.disabled ? (
+                    <SidebarMenuButton 
+                      disabled 
+                      tooltip={collapsed ? item.title : undefined}
+                      className={`flex items-center p-3 rounded-lg transition-colors opacity-50 cursor-not-allowed ${collapsed ? 'justify-center' : ''}`}
                     >
                       <item.icon className="h-5 w-5 flex-shrink-0" />
                       {!collapsed && (
@@ -180,8 +202,22 @@ export function AppSidebar() {
                           <span className="font-medium text-sm truncate">{item.title}</span>
                         </div>
                       )}
-                    </NavLink>
-                  </SidebarMenuButton>
+                    </SidebarMenuButton>
+                  ) : (
+                    <SidebarMenuButton asChild tooltip={collapsed ? item.title : undefined}>
+                      <NavLink
+                        to={item.url}
+                        className={`flex items-center p-3 rounded-lg transition-colors ${getNavClass(item.url)} ${collapsed ? 'justify-center' : ''}`}
+                      >
+                        <item.icon className="h-5 w-5 flex-shrink-0" />
+                        {!collapsed && (
+                          <div className="flex-1 ml-3 min-w-0">
+                            <span className="font-medium text-sm truncate">{item.title}</span>
+                          </div>
+                        )}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  )}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>

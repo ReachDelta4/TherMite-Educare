@@ -15,6 +15,7 @@ import ReactFlow, {
   getSmoothStepPath,
   EdgeProps,
   useReactFlow,
+  BackgroundVariant,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { 
@@ -50,6 +51,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { nanoid } from 'nanoid';
 
 
 // --- NEW, ROBUST VISUAL FLOW FORM BUILDER ---
@@ -206,7 +208,7 @@ const FlowFormBuilder = ({ initialJson, onSave, onClose }: { initialJson: string
                     {Object.keys(selectedComponent).filter(k => k !== 'id' && k !== 'type').map(key => (
                         <div key={key}>
                             <Label className="capitalize text-xs">{key.replace('_', ' ')}</Label>
-                            <Textarea value={(selectedComponent as any)[key]} onChange={e => updateComponent(selectedComponent.id, { [key]: e.target.value })} className="text-sm" />
+                            <Textarea value={(typeof (selectedComponent as any)[key] === 'object' ? JSON.stringify((selectedComponent as any)[key], null, 2) : (selectedComponent as any)[key]) || ''} onChange={e => updateComponent(selectedComponent.id, { [key]: e.target.value })} className="text-sm" />
                         </div>
                     ))}
                     <Button variant="destructive" size="sm" className="w-full !mt-6" onClick={() => deleteComponent(selectedComponent.id)}>Delete Element</Button>
@@ -609,7 +611,7 @@ const ConfigPanel = ({ selectedNode, onUpdateNode, onDeleteNode }: { selectedNod
               <Label htmlFor={`config-${key}`}>{key}</Label>
               <Textarea
                 id={`config-${key}`}
-                value={typeof value === 'object' ? JSON.stringify(value, null, 2) : value}
+                value={typeof value === 'object' ? JSON.stringify(value, null, 2) : value || ''}
                 onChange={(e) => {
                     if (key === 'flow_json') {
                         // Just update the string, don't try to parse it here
@@ -779,7 +781,7 @@ const FlowBuilder = () => {
                                 default: return '#6b7280';
                             }
                         }}/>
-                        <Background gap={16} size={1} variant="dots" />
+                        <Background gap={16} size={1} variant={BackgroundVariant.Dots} />
                     </ReactFlow>
                 </main>
                 <ConfigPanel selectedNode={selectedNode} onUpdateNode={updateNodeConfig} onDeleteNode={deleteNode} />

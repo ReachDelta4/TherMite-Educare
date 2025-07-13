@@ -24,6 +24,9 @@ const IndexContent = () => {
     if (path === "/reports") return "Report Builder";
     if (path === "/analytics/export") return "Export Data";
     if (path === "/analytics/scheduled") return "Scheduled Reports";
+    if (path === "/enterprise-mis") return "Enterprise MIS Dashboard";
+    if (path.startsWith("/enterprise-mis/")) return "Enterprise MIS Dashboard";
+    if (path === "/scheduled-reports") return "Scheduled Reports";
     
     // Extract the base path for default cases
     const basePath = path.split('/')[1];
@@ -49,6 +52,9 @@ const IndexContent = () => {
     if (path === "/reports") return "Create custom reports";
     if (path === "/analytics/export") return "Export your data";
     if (path === "/analytics/scheduled") return "Set up automated report delivery";
+    if (path === "/enterprise-mis") return "Business Intelligence & Growth Analytics Platform";
+    if (path.startsWith("/enterprise-mis/")) return "Business Intelligence & Growth Analytics Platform";
+    if (path === "/scheduled-reports") return "Schedule and manage automated reports";
     
     return "TherMite Educare Platform";
   };

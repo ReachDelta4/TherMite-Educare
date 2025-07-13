@@ -25,7 +25,7 @@ import {
   Globe,
   PlusCircle,
   FileAudio,
-  Waveform
+  AudioWaveform,
 } from "lucide-react";
 
 const availableVoices = [

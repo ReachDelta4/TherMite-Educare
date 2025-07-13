@@ -5,6 +5,8 @@ import { createServer as createViteServer, createLogger } from "vite";
 import { type Server } from "http";
 import viteConfig from "../vite.config";
 import { nanoid } from "nanoid";
+import { createProxyMiddleware } from "http-proxy-middleware";
+import { VITE_HOST, VITE_PORT } from "./constants";
 
 const viteLogger = createLogger();
 
@@ -23,7 +25,6 @@ export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
     middlewareMode: true,
     hmr: { server },
-    allowedHosts: true,
   };
 
   const vite = await createViteServer({
@@ -33,7 +34,8 @@ export async function setupVite(app: Express, server: Server) {
       ...viteLogger,
       error: (msg, options) => {
         viteLogger.error(msg, options);
-        process.exit(1);
+        // Don't exit on error, just log it
+        // process.exit(1);
       },
     },
     server: serverOptions,
@@ -41,8 +43,15 @@ export async function setupVite(app: Express, server: Server) {
   });
 
   app.use(vite.middlewares);
+  
+  // Handle all other routes with the Vite HTML middleware
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
+    
+    // Skip API routes
+    if (url.startsWith('/api')) {
+      return next();
+    }
 
     try {
       const clientTemplate = path.resolve(
@@ -65,6 +74,8 @@ export async function setupVite(app: Express, server: Server) {
       next(e);
     }
   });
+  
+  return vite;
 }
 
 export function serveStatic(app: Express) {
@@ -83,3 +94,9 @@ export function serveStatic(app: Express) {
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }
+
+// This function is no longer needed as we're using setupVite directly
+export const configureVite = (app: Express) => {
+  viteLogger.info("configureVite is deprecated, use setupVite instead");
+  // No-op
+};

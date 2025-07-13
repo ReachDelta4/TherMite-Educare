@@ -24,8 +24,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   LineChart, Line, PieChart, Pie, Cell, FunnelChart, Funnel, LabelList,
   AreaChart, Area, ComposedChart, RadarChart, PolarGrid, PolarAngleAxis, 
-  PolarRadiusAxis, Radar, ScatterChart, Scatter, ReferenceLine,
-  TreemapChart, Treemap, SankeyChart, Sankey
+  PolarRadiusAxis, Radar, ScatterChart, Scatter, ReferenceLine
 } from "recharts";
 
 // Business Metrics Data for TherMite Educare

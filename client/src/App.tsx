@@ -19,6 +19,9 @@ const UserManagement = lazy(() => import("@/components/user-management/user-mana
 const UserProfile = lazy(() => import("@/components/user-management/user-profile").then(m => ({ default: m.UserProfile })));
 const RolesPermissions = lazy(() => import("@/components/user-management/roles-permissions").then(m => ({ default: m.RolesPermissions })));
 const OverviewPage = lazy(() => import("./pages/OverviewPage").then(m => ({ default: m.OverviewPage })));
+const EnterpriseMISDashboard = lazy(() => import("./pages/EnterpriseMISDashboard").then(m => ({ default: m.EnterpriseMISDashboard })));
+const ScheduledReportsPage = lazy(() => import("./pages/ScheduledReportsPage").then(m => ({ default: m.ScheduledReportsPage })));
+const SummaryReportsPage = lazy(() => import("./pages/SummaryReportsPage"));
 
 
 const App: React.FC = () => {
@@ -48,10 +51,13 @@ const App: React.FC = () => {
                 <Route path="/" element={<Index />}>
                   <Route index element={<OverviewPage />} />
                   <Route path="dashboard/*" element={<PowerhouseDashboard />} />
+                  <Route path="enterprise-mis/*" element={<EnterpriseMISDashboard />} />
+                  <Route path="summary-reports" element={<SummaryReportsPage />} />
                   <Route path="overview" element={<OverviewPage />} />
                   <Route path="whatsapp" element={<WhatsAppBot />} />
                   <Route path="certificates" element={<CertificateGenerator />} />
                   <Route path="ai-calling" element={<AICallingAgent />} />
+                  <Route path="scheduled-reports" element={<ScheduledReportsPage />} />
                   
                   {/* User Management Routes */}
                   <Route path="users" element={<UserManagement />} />

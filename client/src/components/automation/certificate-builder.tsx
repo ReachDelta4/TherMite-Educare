@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Canvas as FabricCanvas, Circle, Rect, FabricText, Line, FabricImage } from "fabric";
+import { Canvas as FabricCanvas, Circle, Rect, FabricText, Line, FabricImage, FabricObject, TEvent } from "fabric";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -134,7 +134,7 @@ export function CertificateBuilder() {
   useEffect(() => {
     if (!fabricCanvas) return;
 
-    const updateProperties = (target: fabric.Object | null) => {
+    const updateProperties = (target: FabricObject | null) => {
         if (target) {
             setOpacity(target.get('opacity')! * 100);
             setStrokeColor(target.get('stroke') || '#000000');
@@ -147,8 +147,8 @@ export function CertificateBuilder() {
         }
     }
 
-    const onSelectionCreated = (e: fabric.IEvent<MouseEvent>) => updateProperties(e.target || null);
-    const onSelectionUpdated = (e: fabric.IEvent<MouseEvent>) => updateProperties(e.target || null);
+    const onSelectionCreated = (e: any) => updateProperties(e.selected[0] || null);
+    const onSelectionUpdated = (e: any) => updateProperties(e.selected[0] || null);
     const onSelectionCleared = () => {
         setOpacity(100);
         setStrokeColor('#000000');
@@ -173,7 +173,7 @@ export function CertificateBuilder() {
     if (fabricCanvas) {
       // Clear previous grid lines
       fabricCanvas.getObjects().forEach(obj => {
-        if (obj.name === 'gridline') {
+        if ((obj as any).name === 'gridline') {
           fabricCanvas.remove(obj);
         }
       });
@@ -224,7 +224,7 @@ export function CertificateBuilder() {
   };
 
   const saveCanvasState = (canvas: FabricCanvas) => {
-    const state = JSON.stringify(canvas.toJSON(['name']));
+    const state = JSON.stringify(canvas.toJSON());
     const newHistory = canvasHistory.slice(0, historyIndex + 1);
     newHistory.push(state);
     setCanvasHistory(newHistory);
@@ -234,7 +234,7 @@ export function CertificateBuilder() {
   const loadCanvasState = (state: string, canvas: FabricCanvas) => {
     canvas.loadFromJSON(state, () => {
       canvas.getObjects().forEach(obj => {
-        if (obj.name === 'gridline') {
+        if ((obj as any).name === 'gridline') {
           obj.set({ selectable: false, evented: false });
         }
       });
@@ -245,28 +245,34 @@ export function CertificateBuilder() {
   const handleOpacityChange = (value: number[]) => {
     const newOpacity = value[0];
     setOpacity(newOpacity);
-    if (fabricCanvas && fabricCanvas.getActiveObject()) {
-      fabricCanvas.getActiveObject().set('opacity', newOpacity / 100);
-      fabricCanvas.renderAll();
+    const activeObject = fabricCanvas?.getActiveObject();
+    if (activeObject) {
+      activeObject.set('opacity', newOpacity / 100);
+      fabricCanvas!.renderAll();
+      saveCanvasState(fabricCanvas!);
     }
   };
 
   const handleStrokeColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const color = e.target.value;
-      setStrokeColor(color);
-      if (fabricCanvas && fabricCanvas.getActiveObject()) {
-        fabricCanvas.getActiveObject().set('stroke', color);
-        fabricCanvas.renderAll();
-      }
+    const color = e.target.value;
+    setStrokeColor(color);
+    const activeObject = fabricCanvas?.getActiveObject();
+    if (activeObject) {
+        activeObject.set('stroke', color);
+        fabricCanvas!.renderAll();
+        saveCanvasState(fabricCanvas!);
+    }
   };
 
   const handleStrokeWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const width = parseInt(e.target.value, 10);
-      setStrokeWidth(width);
-      if (fabricCanvas && fabricCanvas.getActiveObject()) {
-        fabricCanvas.getActiveObject().set('strokeWidth', width);
-        fabricCanvas.renderAll();
-      }
+    const width = parseInt(e.target.value, 10);
+    setStrokeWidth(width);
+    const activeObject = fabricCanvas?.getActiveObject();
+    if (activeObject) {
+        activeObject.set('strokeWidth', width);
+        fabricCanvas!.renderAll();
+        saveCanvasState(fabricCanvas!);
+    }
   };
 
   const handleFontStyleChange = (style: 'bold' | 'italic' | 'underline') => {
@@ -309,18 +315,22 @@ export function CertificateBuilder() {
   };
 
   const handleDeleteObject = () => {
-    if (fabricCanvas && fabricCanvas.getActiveObject()) {
-      fabricCanvas.remove(fabricCanvas.getActiveObject());
-      fabricCanvas.renderAll();
+    const activeObject = fabricCanvas?.getActiveObject();
+    if (activeObject) {
+      fabricCanvas!.remove(activeObject);
+      fabricCanvas!.discardActiveObject();
+      fabricCanvas!.renderAll();
     }
   };
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement> | string) => {
     const color = typeof e === 'string' ? e : e.target.value;
     setSelectedColor(color);
-    if (fabricCanvas && fabricCanvas.getActiveObject()) {
-      fabricCanvas.getActiveObject().set('fill', color);
-      fabricCanvas.renderAll();
+    const activeObject = fabricCanvas?.getActiveObject();
+    if (activeObject) {
+      activeObject.set('fill', color);
+      fabricCanvas!.renderAll();
+      saveCanvasState(fabricCanvas!);
     }
   };
 
@@ -347,85 +357,88 @@ export function CertificateBuilder() {
     }
   };
 
-  const handleElementClick = (elementId: string) => {
+  const handleElementClick = async (elementId: string) => {
     if (!fabricCanvas) return;
-
-    setSelectedTool(elementId);
-    
+  
     switch (elementId) {
-      case "text":
-        const text = new FabricText("Sample Text", {
+      case "text": {
+        const text = new FabricText("New Text", {
           left: 100,
           top: 100,
-          fontSize: fontSize,
+          fontSize: 30,
           fill: selectedColor,
           fontFamily: selectedFont
         });
         fabricCanvas.add(text);
-        fabricCanvas.setActiveObject(text);
         break;
-        
-      case "heading":
-        const heading = new FabricText("Certificate Title", {
+      }
+      case "heading": {
+        const heading = new FabricText("New Heading", {
           left: 100,
-          top: 50,
-          fontSize: fontSize + 10,
+          top: 150,
+          fontSize: 50,
+          fontWeight: 'bold',
           fill: selectedColor,
-          fontFamily: selectedFont,
-          fontWeight: 'bold'
+          fontFamily: selectedFont
         });
         fabricCanvas.add(heading);
-        fabricCanvas.setActiveObject(heading);
         break;
-        
-      case "rectangle":
+      }
+      case "rectangle": {
         const rect = new Rect({
-          left: 100,
-          top: 100,
-          width: 200,
-          height: 100,
+          left: 150,
+          top: 200,
+          width: 100,
+          height: 80,
           fill: selectedColor,
-          stroke: '#000',
-          strokeWidth: 2
+          stroke: strokeColor,
+          strokeWidth: strokeWidth,
         });
         fabricCanvas.add(rect);
-        fabricCanvas.setActiveObject(rect);
         break;
-        
-      case "circle":
+      }
+      case "circle": {
         const circle = new Circle({
-          left: 100,
-          top: 100,
+          left: 200,
+          top: 250,
           radius: 50,
           fill: selectedColor,
-          stroke: '#000',
-          strokeWidth: 2
+          stroke: strokeColor,
+          strokeWidth: strokeWidth,
         });
         fabricCanvas.add(circle);
-        fabricCanvas.setActiveObject(circle);
         break;
-        
-      case "image":
-        const imageInput = document.createElement('input');
-        imageInput.type = 'file';
-        imageInput.accept = 'image/*';
-        imageInput.onchange = (e) => {
+      }
+      case "image": {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
           const file = (e.target as HTMLInputElement).files?.[0];
           if (file) {
             const reader = new FileReader();
-            reader.onload = (f) => {
-              const data = f.target?.result;
-              FabricImage.fromURL(data as string, (img) => {
-                fabricCanvas.add(img);
-              });
+            reader.onload = (event) => {
+              const data = event.target?.result;
+              if (data) {
+                FabricImage.fromURL(data as string).then(img => {
+                  img.scaleToWidth(200);
+                  fabricCanvas.add(img);
+                  fabricCanvas.centerObject(img);
+                  saveCanvasState(fabricCanvas);
+                });
+              }
             };
             reader.readAsDataURL(file);
           }
         };
-        imageInput.click();
+        input.click();
+        break;
+      }
+      default:
         break;
     }
     fabricCanvas.renderAll();
+    saveCanvasState(fabricCanvas);
   };
 
   const addDynamicField = (field: string) => {
@@ -443,70 +456,84 @@ export function CertificateBuilder() {
   };
 
   const saveTemplate = () => {
-    if (!fabricCanvas || !templateName) {
-      toast.error("Please provide a template name.");
-      return;
-    }
-    const canvasJSON = fabricCanvas.toJSON(['name']);
-    const thumbnail = fabricCanvas.toDataURL({ format: 'png', quality: 0.5 });
+    if (!fabricCanvas) return;
+    const canvasJSON = fabricCanvas.toJSON();
+    const thumbnail = fabricCanvas.toDataURL({ format: 'png', quality: 0.5, multiplier: 1 });
     const newTemplate: CertificateTemplate = {
-      id: new Date().toISOString(),
+      id: `template-${Date.now()}`,
       name: templateName,
       canvas: canvasJSON,
-      thumbnail: thumbnail,
-      createdAt: new Date().toLocaleString(),
-      placeholders: [], // TODO: Implement placeholder extraction from canvas
-      category: 'User Defined'
+      thumbnail,
+      createdAt: new Date().toISOString(),
+      placeholders: [], // Simplified for now
+      category: "Custom",
     };
     const updatedTemplates = [...templates, newTemplate];
     setTemplates(updatedTemplates);
     localStorage.setItem("certificateTemplates", JSON.stringify(updatedTemplates));
-    toast.success("Template saved successfully!");
     setSaveDialogOpen(false);
+    toast.success(`Template "${templateName}" saved!`);
+    setTemplateName("");
   };
 
   const loadTemplate = (template: CertificateTemplate) => {
-    if (fabricCanvas) {
+    if (!fabricCanvas) return;
     fabricCanvas.loadFromJSON(template.canvas, () => {
       fabricCanvas.renderAll();
-        toast.info(`Template "${template.name}" loaded.`);
+      toast.info(`Template "${template.name}" loaded.`);
     });
-    }
   };
 
   const deleteTemplate = (templateId: string) => {
-    const updatedTemplates = templates.filter(t => t.id !== templateId);
+    const updatedTemplates = templates.filter((t) => t.id !== templateId);
     setTemplates(updatedTemplates);
     localStorage.setItem("certificateTemplates", JSON.stringify(updatedTemplates));
     toast.warning("Template deleted.");
   };
 
   const clearCanvas = () => {
-    if (fabricCanvas) {
-      fabricCanvas.getObjects().forEach(obj => {
-        if (obj.name !== 'gridline') {
-          fabricCanvas.remove(obj);
-        }
-      });
-      // The history will be saved by the object:removed event
-    fabricCanvas.renderAll();
-      toast.info("Canvas cleared.");
-    }
+    if (!fabricCanvas) return;
+    fabricCanvas.clear();
+    addGridToCanvas(fabricCanvas); // Re-add grid after clearing
   };
 
   const exportTemplate = (isPreview = false) => {
-    if (!fabricCanvas) return null;
-    const dataURL = fabricCanvas.toDataURL({ format: 'png', quality: 1.0 });
-    if (isPreview) {
-      return dataURL;
+    if (!fabricCanvas) return { dataURL: '', json: '' };
+    // Temporarily hide grid for export
+    const gridObjects = fabricCanvas.getObjects().filter(obj => (obj as any).name === 'gridline');
+    gridObjects.forEach(obj => obj.set({ visible: false }));
+    fabricCanvas.renderAll();
+
+    const dataURL = fabricCanvas.toDataURL({ format: 'png', quality: 1.0, multiplier: 2 });
+    const json = JSON.stringify(fabricCanvas.toJSON(), null, 2);
+
+    // Restore grid visibility
+    gridObjects.forEach(obj => obj.set({ visible: true }));
+    fabricCanvas.renderAll();
+
+    if (!isPreview) {
+      // Trigger download
+      const link = document.createElement('a');
+      link.download = 'certificate-template.png';
+      link.href = dataURL;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      const jsonBlob = new Blob([json], { type: 'application/json' });
+      const jsonUrl = URL.createObjectURL(jsonBlob);
+      const jsonLink = document.createElement('a');
+      jsonLink.download = 'certificate-template.json';
+      jsonLink.href = jsonUrl;
+      document.body.appendChild(jsonLink);
+      jsonLink.click();
+      document.body.removeChild(jsonLink);
+      URL.revokeObjectURL(jsonUrl);
+
+      toast.success("Template exported as PNG and JSON.");
     }
-    const link = document.createElement('a');
-    link.download = `${templateName || 'certificate'}.png`;
-    link.href = dataURL;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success("Certificate exported as PNG.");
+
+    return { dataURL, json };
   };
 
   return (
@@ -659,16 +686,20 @@ export function CertificateBuilder() {
               <Button variant="ghost" size="icon" onClick={redo} disabled={historyIndex >= canvasHistory.length - 1} title="Redo">
                 <Redo className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => {
-                if(fabricCanvas?.getActiveObject()){
-                  fabricCanvas.getActiveObject().clone((cloned: any) => {
-                    cloned.set({
-                      left: cloned.left + 10,
-                      top: cloned.top + 10,
-                    });
-                    fabricCanvas.add(cloned);
-                    fabricCanvas.setActiveObject(cloned);
-                    fabricCanvas.renderAll();
+              <Button variant="ghost" size="icon" onClick={async () => {
+                const activeObject = fabricCanvas?.getActiveObject();
+                if (activeObject) {
+                  activeObject.clone().then(cloned => {
+                      if(fabricCanvas) {
+                          cloned.set({
+                              left: activeObject.left! + 20,
+                              top: activeObject.top! + 20,
+                          });
+                          fabricCanvas.add(cloned);
+                          fabricCanvas.setActiveObject(cloned);
+                          fabricCanvas.renderAll();
+                          saveCanvasState(fabricCanvas);
+                      }
                   });
                 }
               }} title="Duplicate">
@@ -713,7 +744,7 @@ export function CertificateBuilder() {
                   <DialogHeader>
                     <DialogTitle>Certificate Preview</DialogTitle>
                   </DialogHeader>
-                  <img src={exportTemplate(true) as string} alt="Certificate Preview" className="w-full h-auto rounded-md" />
+                  <img src={exportTemplate(true).dataURL} alt="Certificate Preview" className="w-full h-auto rounded-md" />
                 </DialogContent>
               </Dialog>
 

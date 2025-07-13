@@ -136,9 +136,9 @@ export function RolesPermissions() {
     }
   };
 
-  const countPermissions = (permissions: any) => {
+  const countPermissions = (permissions: { [moduleId: string]: string[] }) => {
     if (!permissions) return 0;
-    return Object.values(permissions).reduce((acc: any, perms: any) => acc + perms.length, 0);
+    return Object.values(permissions).reduce((acc: number, perms: string[]) => acc + perms.length, 0);
   }
 
   return (

@@ -54,7 +54,7 @@ export function ContactManagement() {
     .filter(c => searchTerm === "" || c.name.toLowerCase().includes(searchTerm.toLowerCase()) || c.phone.includes(searchTerm))
     .filter(c => filterTag === "all" || c.tags.includes(filterTag));
     
-  const allTags = [...new Set(contacts.flatMap(c => c.tags))];
+  const allTags = Array.from(new Set(contacts.flatMap(c => c.tags)));
 
   return (
     <div className="space-y-6">
