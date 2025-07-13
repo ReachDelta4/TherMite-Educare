@@ -1051,8 +1051,8 @@ const SalesIntelligence = () => (
               <LineChart data={revenueForecastData}>
               <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
-                <YAxis tickFormatter={(value) => `₹${value / 100000}L`} />
-                <Tooltip formatter={(value) => `₹${(value / 1000).toFixed(0)}k`} />
+                <YAxis tickFormatter={(value) => `₹${(value as number) / 100000}L`} />
+                <Tooltip formatter={(value) => `₹${((value as number) / 1000).toFixed(0)}k`} />
               <Legend />
                 <Line type="monotone" dataKey="actual" name="Actual Revenue" stroke="#8884d8" strokeWidth={2} />
                 <Line type="monotone" dataKey="forecast" name="Forecasted Revenue" stroke="#82ca9d" strokeWidth={2} strokeDasharray="5 5" />
@@ -1256,7 +1256,7 @@ const SalesIntelligence = () => (
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis type="number" />
             <YAxis dataKey="stage" type="category" width={120} tick={{ fontSize: 12 }} />
-            <Tooltip content={<AdvancedFunnelTooltip />} />
+            <Tooltip content={({ active, payload }) => <AdvancedFunnelTooltip active={active} payload={payload} />} />
             <Legend />
             <Bar dataKey="volume" name="Volume" fill="#8884d8" barSize={20} />
             <Bar dataKey="cost" name="Cost (₹)" fill="#82ca9d" barSize={20} />
